@@ -16,46 +16,49 @@ ISSUE_PATTERN = re.compile('#[0-9]+')
 
 def process_changelog_links(app, doctree, docname):
 
-    if 'changelog' in docname and app.config.github_issues_url is not None:
+    if 'changelog' not in docname or app.config.github_issues_url is None:
+        return
 
-        for item in doctree.traverse():
+    for item in doctree.traverse():
 
-            if isinstance(item, Text):
+        if not isinstance(item, Text):
+            continue
 
-                # We build a new list of items to replace the current item. If
-                # a link is found, we need to use a 'reference' item.
-                children = []
+        # We build a new list of items to replace the current item. If
+        # a link is found, we need to use a 'reference' item.
+        children = []
 
-                # First cycle through blocks of issues (delimited by []) then
-                # iterate inside each one to find the individual issues.
-                prev_block_end = 0
-                for block in BLOCK_PATTERN.finditer(item):
-                    block_start, block_end = block.start(), block.end()
-                    children.append(Text(item[prev_block_end:block_start]))
-                    block = item[block_start:block_end]
-                    prev_end = 0
-                    for m in ISSUE_PATTERN.finditer(block):
-                        start, end = m.start(), m.end()
-                        children.append(Text(block[prev_end:start]))
-                        issue_number = block[start:end]
-                        children.append(reference(text=issue_number,
-                                                  name=issue_number,
-                                                  refuri=app.config.github_issues_url + issue_number[1:]))
-                        prev_end = end
+        # First cycle through blocks of issues (delimited by []) then
+        # iterate inside each one to find the individual issues.
+        prev_block_end = 0
+        for block in BLOCK_PATTERN.finditer(item):
+            block_start, block_end = block.start(), block.end()
+            children.append(Text(item[prev_block_end:block_start]))
+            block = item[block_start:block_end]
+            prev_end = 0
+            for m in ISSUE_PATTERN.finditer(block):
+                start, end = m.start(), m.end()
+                children.append(Text(block[prev_end:start]))
+                issue_number = block[start:end]
+                refuri = app.config.github_issues_url + issue_number[1:]
+                children.append(reference(text=issue_number,
+                                          name=issue_number,
+                                          refuri=refuri))
+                prev_end = end
 
-                    prev_block_end = block_end
+            prev_block_end = block_end
 
-                    # If no issues were found, this adds the whole item,
-                    # otherwise it adds the remaining text.
-                    children.append(Text(block[prev_end:block_end]))
+            # If no issues were found, this adds the whole item,
+            # otherwise it adds the remaining text.
+            children.append(Text(block[prev_end:block_end]))
 
-                # If no blocks were found, this adds the whole item, otherwise
-                # it adds the remaining text.
-                children.append(Text(item[prev_block_end:]))
+        # If no blocks were found, this adds the whole item, otherwise
+        # it adds the remaining text.
+        children.append(Text(item[prev_block_end:]))
 
-                # Replace item by the new list of items we have generated,
-                # which may contain links.
-                item.parent.replace(item, children)
+        # Replace item by the new list of items we have generated,
+        # which may contain links.
+        item.parent.replace(item, children)
 
 
 def setup(app):

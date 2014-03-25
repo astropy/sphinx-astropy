@@ -9,12 +9,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import re
 import warnings
+
 from os import path
 from distutils.version import LooseVersion
-import re
 
-from ..utils.compat import subprocess
+from ..compat import subprocess
 
 
 # -- General configuration ----------------------------------------------------
@@ -127,14 +128,14 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.pngmath',
     'sphinx.ext.inheritance_diagram',
-    'astropy.sphinx.ext.numpydoc',
-    'astropy.sphinx.ext.astropyautosummary',
-    'astropy.sphinx.ext.automodsumm',
-    'astropy.sphinx.ext.automodapi',
-    'astropy.sphinx.ext.tocdepthfix',
-    'astropy.sphinx.ext.doctest',
-    'astropy.sphinx.ext.changelog_links',
-    'astropy.sphinx.ext.viewcode'  # Use patched version of viewcode
+    'astropy_helpers.sphinx.ext.numpydoc',
+    'astropy_helpers.sphinx.ext.astropyautosummary',
+    'astropy_helpers.sphinx.ext.automodsumm',
+    'astropy_helpers.sphinx.ext.automodapi',
+    'astropy_helpers.sphinx.ext.tocdepthfix',
+    'astropy_helpers.sphinx.ext.doctest',
+    'astropy_helpers.sphinx.ext.changelog_links',
+    'astropy_helpers.sphinx.ext.viewcode'  # Use patched version of viewcode
     ]
 
 # Above, we use a patched version of viewcode rather than 'sphinx.ext.viewcode'
