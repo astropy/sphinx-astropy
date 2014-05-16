@@ -9,12 +9,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import re
 import warnings
+
 from os import path
 from distutils.version import LooseVersion
-import re
 
-from ..utils.compat import subprocess
+from ..compat import subprocess
 
 
 # -- General configuration ----------------------------------------------------
@@ -127,14 +128,14 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.pngmath',
     'sphinx.ext.inheritance_diagram',
-    'astropy.sphinx.ext.numpydoc',
-    'astropy.sphinx.ext.astropyautosummary',
-    'astropy.sphinx.ext.automodsumm',
-    'astropy.sphinx.ext.automodapi',
-    'astropy.sphinx.ext.tocdepthfix',
-    'astropy.sphinx.ext.doctest',
-    'astropy.sphinx.ext.changelog_links',
-    'astropy.sphinx.ext.viewcode'  # Use patched version of viewcode
+    'astropy_helpers.sphinx.ext.numpydoc',
+    'astropy_helpers.sphinx.ext.astropyautosummary',
+    'astropy_helpers.sphinx.ext.automodsumm',
+    'astropy_helpers.sphinx.ext.automodapi',
+    'astropy_helpers.sphinx.ext.tocdepthfix',
+    'astropy_helpers.sphinx.ext.doctest',
+    'astropy_helpers.sphinx.ext.changelog_links',
+    'astropy_helpers.sphinx.ext.viewcode'  # Use patched version of viewcode
     ]
 
 # Above, we use a patched version of viewcode rather than 'sphinx.ext.viewcode'
@@ -183,7 +184,10 @@ html_sidebars = {
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = 'astropy_logo.ico'  # included in the bootstrap-astropy theme
+
+# included in the bootstrap-astropy theme
+html_favicon = path.join(html_theme_path[0], html_theme, 'static',
+                         'astropy_logo.ico')
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
