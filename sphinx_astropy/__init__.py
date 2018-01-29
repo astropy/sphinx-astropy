@@ -6,3 +6,5 @@ the Astropy documentation format. Note that some sphinx extensions which are
 bundled as-is (numpydoc and sphinx-automodapi) are included in
 astropy_helpers.extern rather than astropy_helpers.sphinx.ext.
 """
+
+__version__ = '1.0.dev0'
