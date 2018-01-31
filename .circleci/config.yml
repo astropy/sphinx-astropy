@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run:
+          name: Conda setup
+          command: |
+            conda config --set always_yes yes --set changeps1 no
+            conda update -n root conda
+      - run:
+          name: Run tests with Sphinx 1.6
+          command: |
+            conda create -q -n sphinx16 sphinx=1.6 pytest
+            source activate sphinx16
+            pip install .
+            pytest sphinx_astropy
+      - run:
+          name: Run tests with Sphinx 1.5
+          command: |
+            conda create -q -n sphinx15 sphinx=1.5 pytest
+            source activate sphinx15
+            pip install .
+            pytest sphinx_astropy
+      - run:
+          name: Run tests with Sphinx 1.4
+          command: |
+            conda create -q -n sphinx14 sphinx=1.4 pytest
+            source activate sphinx14
+            pip install .
+            pytest sphinx_astropy
+      - run:
+          name: Check setup.py metadata
+          command: |
+            python setup.py check --restructuredtext

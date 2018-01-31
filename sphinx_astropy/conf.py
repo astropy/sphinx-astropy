@@ -132,12 +132,11 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.viewcode',
-    'astropy_helpers.extern.numpydoc',
-    'astropy_helpers.extern.automodapi.automodapi',
-    'astropy_helpers.extern.automodapi.smart_resolver',
-    'astropy_helpers.sphinx.ext.tocdepthfix',
-    'astropy_helpers.sphinx.ext.doctest',
-    'astropy_helpers.sphinx.ext.changelog_links']
+    'numpydoc',
+    'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver',
+    'sphinx_astropy.ext.doctest',
+    'sphinx_astropy.ext.changelog_links']
 
 
 if not on_rtd and LooseVersion(sphinx.__version__) < LooseVersion('1.4'):
@@ -182,9 +181,6 @@ graphviz_dot_args = [
 
 # -- Options for HTML output -------------------------------------------------
 
-# Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [path.abspath(path.join(path.dirname(__file__), 'themes'))]
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'bootstrap-astropy'
@@ -201,9 +197,10 @@ html_sidebars = {
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 
-# included in the bootstrap-astropy theme
-html_favicon = path.join(html_theme_path[0], html_theme, 'static',
-                         'astropy_logo.ico')
+# We include by default the favicon that is in the bootstrap-astropy theme.
+import astropy_sphinx_theme
+html_theme_path = astropy_sphinx_theme.get_html_theme_path()
+html_favicon = os.path.join(html_theme_path[0], html_theme, 'static', 'astropy_logo.ico')
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
