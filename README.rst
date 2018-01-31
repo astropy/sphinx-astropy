@@ -3,7 +3,7 @@
 About
 =====
 
-This pacakge serves two purposes:
+This package serves two purposes:
 
 * It contains Sphinx configuration and extensions specific to the Astropy project
 
