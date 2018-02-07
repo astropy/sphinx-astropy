@@ -31,6 +31,14 @@ jobs:
             source activate sphinx14
             pip install .
             pytest sphinx_astropy
+      - run :
+          name: Run tests with developer version of Sphinx
+          command: |
+            conda create -q -n sphinx-dev pytest
+            source activate sphinx-dev
+            pip install git+https://github.com/sphinx-doc/sphinx.git#egg=sphinx
+            pip install .
+            pytest sphinx_astropy
       - run:
           name: Check setup.py metadata
           command: |
