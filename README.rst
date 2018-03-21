@@ -38,6 +38,9 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `numpydoc <https://numpydoc.readthedocs.io>`_ - an extension to parse docstrings in NumpyDoc format
 
+* `pillow <https://pillow.readthedocs.io/en/latest/>`_ - a package to deal with
+  images, used by some examples in the astropy core documentation.
+
 |CircleCI Status|
 
 .. |CircleCI Status| image:: https://circleci.com/gh/astropy/sphinx-astropy.svg?style=svg
