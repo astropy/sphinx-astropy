@@ -52,7 +52,7 @@ intersphinx_mapping = {
               (None, 'http://data.astropy.org/intersphinx/numpy.inv')),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/',
               (None, 'http://data.astropy.org/intersphinx/scipy.inv')),
-    'matplotlib': ('http://matplotlib.org/',
+    'matplotlib': ('https://matplotlib.org/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
     'h5py': ('http://docs.h5py.org/en/stable/', None)}
