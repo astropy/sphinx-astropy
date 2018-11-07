@@ -4,7 +4,7 @@ Changes in sphinx-astropy
 1.1 (unreleased)
 ----------------
 
-- No changes yet.
+- Added a new extension for controlling whether intersphinx is used on the command-line.
 
 1.0 (2018-02-07)
 ----------------
