@@ -11,8 +11,14 @@ This is used e.g. by astropy-helpers when using the build_docs command.
 """
 
 from __future__ import print_function
+
+from distutils.version import LooseVersion
+
+from sphinx import __version__
 from sphinx.util import logging
 from sphinx.util.console import bold
+
+SPHINX_GE_18 = LooseVersion(__version__) >= LooseVersion('1.8')
 
 logger = logging.getLogger(__name__)
 
@@ -24,5 +30,7 @@ def disable_intersphinx(app, config):
 
 
 def setup(app):
-    app.connect('config-inited', disable_intersphinx)
-    app.add_config_value('disable_intersphinx', 0, True)
+    # Note that the config-inited setting was only added in Sphinx 1.8
+    if SPHINX_GE_18:
+        app.connect('config-inited', disable_intersphinx)
+        app.add_config_value('disable_intersphinx', 0, True)
