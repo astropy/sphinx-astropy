@@ -20,7 +20,7 @@ else:
 
 BASIC_CONF = """
 from sphinx_astropy.conf import *
-suppress_warnings = ['app.add_directive', 'app.add_node']
+suppress_warnings = ['app.add_directive', 'app.add_node', 'app.add_role']
 """
 
 BASIC_INDEX = """
