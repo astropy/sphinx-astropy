@@ -19,13 +19,13 @@ from sphinx import __version__
 SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
 
 
-def disable_intersphinx(app, config):
+def disable_intersphinx(app, config=None):
     from sphinx.util import logging
     from sphinx.util.console import bold
     logger = logging.getLogger(__name__)
-    if config.disable_intersphinx:
+    if app.config.disable_intersphinx:
         logger.info(bold('disabling intersphinx...'))
-        config.intersphinx_mapping.clear()
+        app.config.intersphinx_mapping.clear()
 
 
 def setup(app):

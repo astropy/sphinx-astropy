@@ -13,14 +13,14 @@ if SPHINX_LT_17:
 
     def build_main(argv=None):
         argv.insert(0, 'sphinx-build')
-        build_main_original(argv=argv)
+        return build_main_original(argv=argv)
 
 else:
     from sphinx.cmd.build import build_main
 
-
 BASIC_CONF = """
 from sphinx_astropy.conf import *
+suppress_warnings = ['app.add_directive', 'app.add_node']
 """
 
 BASIC_INDEX = """
