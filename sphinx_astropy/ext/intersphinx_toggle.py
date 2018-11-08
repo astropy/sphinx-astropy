@@ -16,7 +16,7 @@ from distutils.version import LooseVersion
 
 from sphinx import __version__
 
-SPHINX_GE_18 = LooseVersion(__version__) >= LooseVersion('1.8')
+SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
 
 
 def disable_intersphinx(app, config):
@@ -29,7 +29,13 @@ def disable_intersphinx(app, config):
 
 
 def setup(app):
-    # Note that the config-inited setting was only added in Sphinx 1.8
-    if SPHINX_GE_18:
+
+    # Note that the config-inited setting was only added in Sphinx 1.8. For
+    # earlier versions we use builder-inited but we need to be careful in what
+    # order the extensions are declared so that this happens before intersphinx.
+    if SPHINX_LT_18:
+        app.connect('builder-inited', disable_intersphinx)
+    else:
         app.connect('config-inited', disable_intersphinx)
-        app.add_config_value('disable_intersphinx', 0, True)
+
+    app.add_config_value('disable_intersphinx', 0, True)
