@@ -6,6 +6,8 @@ Changes in sphinx-astropy
 
 - Added a new extension for controlling whether intersphinx is used on the command-line.
 
+- Added a new extension to give a clear warning if the _static folder is missing.
+
 1.0 (2018-02-07)
 ----------------
 
