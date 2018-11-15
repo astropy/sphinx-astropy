@@ -1,7 +1,7 @@
 Changes in sphinx-astropy
 =========================
 
-1.1 (unreleased)
+1.1 (2018-11-15)
 ----------------
 
 - Added a new extension for controlling whether intersphinx is used on the command-line.
