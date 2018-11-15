@@ -17,7 +17,8 @@ SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
 
 
 WARNING_TEMPLATE = """
-Note: The static directory '{0}' was not found. If you don't need it then make
+Note: The static directory '{0}' was not found. This is often because it is
+      empty and you are using git. If so, you don't need it, so make
       sure it isn't included in the html_static_path setting in your conf.py
       file, otherwise Sphinx may fail the build if you are turning warnings into
       errors.
