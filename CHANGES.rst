@@ -6,6 +6,11 @@ Changes in sphinx-astropy
 
 - No changes yet.
 
+1.1.1 (2019-02-21)
+------------------
+
+- Fix app.info() deprecation warning for Sphinx >= 1.6. [#17]
+
 1.1 (2018-11-15)
 ----------------
 
