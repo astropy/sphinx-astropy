@@ -16,7 +16,6 @@ from distutils.version import LooseVersion
 
 from sphinx import __version__
 
-SPHINX_LT_16 = LooseVersion(__version__) < LooseVersion('1.6')
 SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
 
 
@@ -24,11 +23,8 @@ def disable_intersphinx(app, config=None):
 
     from sphinx.util.console import bold
 
-    if SPHINX_LT_16:
-        info = app.info
-    else:
-        from sphinx.util import logging
-        info = logging.getLogger(__name__).info
+    from sphinx.util import logging
+    info = logging.getLogger(__name__).info
 
     if app.config.disable_intersphinx:
         info(bold('disabling intersphinx...'))
