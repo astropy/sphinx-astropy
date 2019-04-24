@@ -10,7 +10,6 @@
 # serve to show the default.
 
 import os
-import sys
 import warnings
 
 from os import path
@@ -25,7 +24,7 @@ from distutils.version import LooseVersion
 # minor parts of the version number, not the micro.  To do a more
 # specific version check, call check_sphinx_version("x.y.z.") from
 # your project's conf.py
-needs_sphinx = '1.3'
+needs_sphinx = '1.6'
 
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -87,11 +86,6 @@ rst_epilog = """
 .. _Astropy: http://astropy.org
 """
 
-# A list of warning types to suppress arbitrary warning messages. We mean to
-# override directives in astropy_helpers.sphinx.ext.autodoc_enhancements,
-# thus need to ignore those warning. This can be removed once the patch gets
-# released in upstream Sphinx (https://github.com/sphinx-doc/sphinx/pull/1843).
-# Suppress the warnings requires Sphinx v1.4.2
 suppress_warnings = ['app.add_directive', ]
 
 # -- Project information ------------------------------------------------------
@@ -138,12 +132,8 @@ extensions = [
     'sphinx_automodapi.smart_resolver',
     'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.changelog_links',
-    'sphinx_astropy.ext.missing_static']
-
-if not on_rtd and LooseVersion(sphinx.__version__) < LooseVersion('1.4'):
-    extensions.append('sphinx.ext.pngmath')
-else:
-    extensions.append('sphinx.ext.mathjax')
+    'sphinx_astropy.ext.missing_static',
+    'sphinx.ext.mathjax']
 
 try:
     import matplotlib.sphinxext.plot_directive

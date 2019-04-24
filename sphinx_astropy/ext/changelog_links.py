@@ -12,8 +12,6 @@ from docutils.nodes import Text, reference
 
 from sphinx import __version__
 
-SPHINX_LT_16 = LooseVersion(__version__) < LooseVersion('1.6')
-
 BLOCK_PATTERN = re.compile('\[#.+\]', flags=re.DOTALL)
 ISSUE_PATTERN = re.compile('#[0-9]+')
 
@@ -26,11 +24,8 @@ def process_changelog_links(app, doctree, docname):
         # if the doc doesn't match any of the changelog regexes, don't process
         return
 
-    if SPHINX_LT_16:
-        info = app.info
-    else:
-        from sphinx.util import logging
-        info = logging.getLogger(__name__).info
+    from sphinx.util import logging
+    info = logging.getLogger(__name__).info
 
     info('[changelog_links] Adding changelog links to "{0}"'.format(docname))
 

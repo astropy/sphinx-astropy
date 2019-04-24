@@ -12,7 +12,6 @@ from distutils.version import LooseVersion
 
 from sphinx import __version__
 
-SPHINX_LT_16 = LooseVersion(__version__) < LooseVersion('1.6')
 SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
 
 
@@ -27,11 +26,8 @@ Note: The static directory '{0}' was not found. This is often because it is
 
 def static_warning(app, config=None):
 
-    if SPHINX_LT_16:
-        info = app.info
-    else:
-        from sphinx.util import logging
-        info = logging.getLogger(__name__).info
+    from sphinx.util import logging
+    info = logging.getLogger(__name__).info
 
     for directory in app.config.html_static_path:
         if not os.path.exists(directory):
