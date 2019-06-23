@@ -10,6 +10,8 @@ __all__ = ('setup',)
 
 from pkg_resources import get_distribution
 
+from .marker import ExampleMarkerDirective
+
 
 def setup(app):
     """Set up the example gallery Sphinx extensions.
@@ -26,6 +28,8 @@ def setup(app):
         http://www.sphinx-doc.org/en/master/extdev/index.html#extension-metadata
         for more information.
     """
+    app.add_directive('example', ExampleMarkerDirective)
+
     return {'version': get_distribution('sphinx_astropy').version,
             # env_version needs to be incremented when the persisted data
             # formats of the extension change.
