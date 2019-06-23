@@ -133,6 +133,7 @@ extensions = [
     'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.changelog_links',
     'sphinx_astropy.ext.missing_static',
+    'sphinx_astropy.ext.example',
     'sphinx.ext.mathjax']
 
 try:
