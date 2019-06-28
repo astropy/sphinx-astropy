@@ -28,3 +28,40 @@ def test_example_directive_targets(app, status, warning):
     target_refids = [t.attrib['refid'] for t in targets]
     for known_target_refid in known_target_refids:
         assert known_target_refid in target_refids
+
+
+@pytest.mark.sphinx('dummy', testroot='example-gallery')
+def test_example_env_persistence(app, status, warning):
+    """Test that the examples are added to the app env.
+    """
+    app.builder.build(['example-marker'])
+    assert hasattr(app.env, 'sphinx_astropy_examples')
+    examples = app.env.sphinx_astropy_examples
+
+    known_examples = [
+        'example-src-example-with-two-paragraphs',
+        'example-src-tagged-example',
+        'example-src-example-with-multiple-tags',
+        'example-src-example-with-subsections'
+    ]
+    for k in known_examples:
+        assert k in examples
+
+    # Test tags
+    assert examples['example-src-example-with-two-paragraphs']['tags'] == set()
+    assert examples['example-src-tagged-example']['tags'] == set(['tag-a'])
+    assert examples['example-src-example-with-multiple-tags']['tags'] \
+        == set(['tag-a', 'tag-b'])
+
+    ex = examples['example-src-example-with-two-paragraphs']
+
+    # Test title
+    assert ex['title'] == 'Example with two paragraphs'
+
+    # Test docname
+    assert ex['docname'] == 'example-marker'
+
+    # Test content
+    assert str(ex['content'][0]) == 'This is the first paragraph.'
+    assert str(ex['content'][1]) == ''
+    assert str(ex['content'][2]) == 'And the second paragraph.'
