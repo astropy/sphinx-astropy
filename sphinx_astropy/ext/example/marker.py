@@ -15,7 +15,7 @@ from sphinx.util.nodes import nested_parse_with_titles
 class ExampleMarkerDirective(Directive):
     """Directive for marking an example snippet in the body of documentation.
 
-    This directive passes content through, unaffected, into the original
+    This directive passes content through into the original
     documentation, but also indexes and copies the content to appear in an
     example gallery.
 
@@ -82,6 +82,11 @@ class ExampleMarkerDirective(Directive):
         container_node.document = self.state.document
         nested_parse_with_titles(self.state, self.content, container_node)
 
+        # The target node is for backlinks from an example page to the
+        # source of the example in the "main" docs.
+        target_node = nodes.target('', '', ids=[self.example_id])
+        self.state.document.note_explicit_target(target_node)
+
         # Persist the example for post-processing into the gallery
         env.sphinx_astropy_examples[self.example_id] = {
             'docname': env.docname,
@@ -91,4 +96,7 @@ class ExampleMarkerDirective(Directive):
             'content': self.content
         }
 
-        return container_node.children
+        output_nodes = [target_node]
+        output_nodes.extend(container_node.children)
+
+        return output_nodes
