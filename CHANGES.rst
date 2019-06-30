@@ -4,7 +4,7 @@ Changes in sphinx-astropy
 1.3 (unreleased)
 ----------------
 
-- No changes yet.
+- Added a new extension, ``sphinx_astropy.ext.example``, that generates example galleries from examples marked up in a project's documentation.
 
 1.2 (2019-11-12)
 ----------------
