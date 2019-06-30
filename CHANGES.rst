@@ -7,6 +7,9 @@ Changes in sphinx-astropy
 - Updated minimum required version of Sphinx to 1.6 as Numpydoc dropped
   suport for older ones. [#19]
 
+- Added an ``example`` directive to mark example snippets in documentation
+  text. These examples are republished in an example gallery. [#22]
+
 1.1.1 (2019-02-21)
 ------------------
 
