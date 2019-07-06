@@ -2,6 +2,7 @@
 
 from xml.etree.ElementTree import tostring
 
+from docutils import nodes
 import pytest
 from sphinx.testing.util import etree_parse
 from sphinx.util import logging
@@ -83,3 +84,24 @@ def test_example_directive_duplicates(app, status, warning):
     expected_message = r'^There is already an example titled "Tagged example"'
     with pytest.raises(SphinxError, match=expected_message):
         app.builder.build(['examples', 'duplicate-examples'])
+
+
+@pytest.mark.sphinx('xml', testroot='example-gallery')
+def test_example_directive_docstring(app, status, warning):
+    """Test an example directive in the docsting of a function that's
+    processed by autofunction and numpydoc.
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+
+    # Check the example made it to the app environment
+    examples = app.env.sphinx_astropy_examples
+    assert 'example-src-using-example-func' in examples
+
+    # Check that the reference target got added to the API reference
+    et = etree_parse(app.outdir / 'example_func.xml')
+    print(tostring(et.getroot(), encoding='unicode'))
+    targets = et.getroot().findall('.//target')
+    refids = [t.attrib['refid'] for t in targets]
+    assert 'example-src-using-example-func' in refids
