@@ -61,7 +61,7 @@ class ExampleMarkerDirective(Directive):
         if self.example_id in env.sphinx_astropy_examples:
             raise SphinxError(
                 'There is already an example titled "{self.title}" '
-                '({self.docname:self.lineno})'.format(self=self.title))
+                '({env.docname}:{self.lineno})'.format(self=self, env=env))
 
         # Parse tags, which are comma-separated.
         if 'tags' in self.options:
