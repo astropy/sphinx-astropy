@@ -4,6 +4,7 @@ from xml.etree.ElementTree import tostring
 
 import pytest
 from sphinx.testing.util import etree_parse
+from sphinx.errors import SphinxError
 
 # Sphinx pytest fixtures only available in Sphinx 1.7+
 pytest.importorskip("sphinx", minversion="1.7")
@@ -65,3 +66,13 @@ def test_example_env_persistence(app, status, warning):
     assert str(ex['content'][0]) == 'This is the first paragraph.'
     assert str(ex['content'][1]) == ''
     assert str(ex['content'][2]) == 'And the second paragraph.'
+
+
+@pytest.mark.sphinx('dummy', testroot='example-gallery-duplicates')
+def test_example_directive_duplicates(app, status, warning):
+    """The example-gallery-duplicates test case has examples with the same
+    title, which is disallowed.
+    """
+    expected_message = r'^There is already an example titled "Tagged example"'
+    with pytest.raises(SphinxError, match=expected_message):
+        app.builder.build(['examples', 'duplicate-examples'])
