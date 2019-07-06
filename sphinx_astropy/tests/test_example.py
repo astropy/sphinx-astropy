@@ -4,6 +4,7 @@ from xml.etree.ElementTree import tostring
 
 import pytest
 from sphinx.testing.util import etree_parse
+from sphinx.util import logging
 from sphinx.errors import SphinxError
 
 # Sphinx pytest fixtures only available in Sphinx 1.7+
@@ -15,7 +16,10 @@ def test_example_directive_targets(app, status, warning):
     """Test that the example directive creates target nodes with the
     appropriate Ids.
     """
-    app.builder.build(['example-marker'])
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+
     et = etree_parse(app.outdir / 'example-marker.xml')
     print(tostring(et.getroot(), encoding='unicode'))
 
@@ -35,7 +39,10 @@ def test_example_directive_targets(app, status, warning):
 def test_example_env_persistence(app, status, warning):
     """Test that the examples are added to the app env.
     """
-    app.builder.build(['example-marker'])
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+
     assert hasattr(app.env, 'sphinx_astropy_examples')
     examples = app.env.sphinx_astropy_examples
 
