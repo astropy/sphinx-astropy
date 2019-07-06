@@ -133,8 +133,8 @@ extensions = [
     'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.changelog_links',
     'sphinx_astropy.ext.missing_static',
-    'sphinx.ext.mathjax',
-    'sphinx_astropy.ext.example']
+    'sphinx_astropy.ext.example',
+    'sphinx.ext.mathjax']
 
 try:
     import matplotlib.sphinxext.plot_directive
