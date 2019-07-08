@@ -2,7 +2,6 @@
 
 from xml.etree.ElementTree import tostring
 
-from docutils import nodes
 import pytest
 from sphinx.testing.util import etree_parse
 from sphinx.util import logging
