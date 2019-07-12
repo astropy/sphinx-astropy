@@ -3,7 +3,7 @@
 text.
 """
 
-__all__ = ('ExampleMarkerDirective',)
+__all__ = ('ExampleMarkerDirective', 'purge_examples')
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -131,3 +131,25 @@ class ExampleMarkerDirective(Directive):
                 raise SphinxError(
                     'There is already an example titled "{self.title}" '
                     '({env.docname}:{self.lineno})'.format(self=self, env=env))
+
+
+def purge_examples(app, env, docname):
+    """Remove examples from ``env.sphinx_astropy_examples`` during the
+    ``env-purge-doc`` event because an associated document was removed from
+    the doctree.
+
+    Parameters
+    ----------
+    app : sphinx.application.Sphinx
+        The app instance.
+    env : sphinx.environment.BuildEnvironment
+        The build environment (modified in place).
+    docname : str
+        Name of the document behing purged during a ``env-purge-doc`` event.
+    """
+    if not hasattr(env, 'sphinx_astropy_examples'):
+        return
+    # Filter out examples matching the purged docname
+    env.sphinx_astropy_examples = {
+        id_: example for id_, example in env.sphinx_astropy_examples.items()
+        if example['docname'] != docname}
