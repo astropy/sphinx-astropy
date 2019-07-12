@@ -58,7 +58,9 @@ class ExampleMarkerDirective(Directive):
         self.title = self.arguments[0].strip()
 
         self.example_id = '-'.join(('example-src', nodes.make_id(self.title)))
-        self._check_existing(self.example_id)
+
+        _check_for_existing_example(env, self.example_id, env.docname,
+                                    self.lineno, self.title)
 
         # Parse tags, which are comma-separated.
         if 'tags' in self.options:
@@ -98,40 +100,6 @@ class ExampleMarkerDirective(Directive):
 
         return output_nodes
 
-    def _check_existing(self, example_id):
-        """Check if an example already exists in the build environment.
-
-        Raises
-        ------
-        SphinxError
-           Raised if an existing example with the same ID exists in the
-           environment, comes from a different ``docname`` and ``lineno``.
-
-        Notes
-        -----
-        Only checking for an existing example with the same ``example_id``
-        raises false alarms during testing with multiple builds while
-        the numpydoc Sphinx extension is enabled. It seems that numpydoc is
-        causing the build environment to carry over between test functions
-        of the same root (even with different builders). Checking that the
-        existing example came from the same document and location (checking
-        ``docname`` and ``lineno`` is sufficient for identifying that the
-        existing example only came from a previous build or document read.
-        """
-        env = self.state.document.settings.env
-        if example_id in env.sphinx_astropy_examples:
-            existing_example = env.sphinx_astropy_examples[self.example_id]
-            if existing_example['docname'] == env.docname \
-                    and existing_example['lineno'] == self.lineno:
-                self._logger.debug(
-                    '[sphinx_astropy] Found an existing instance of example '
-                    '"%s" from an earlier document read', self.title,
-                    location=(env.docname, self.lineno))
-            else:
-                raise SphinxError(
-                    'There is already an example titled "{self.title}" '
-                    '({env.docname}:{self.lineno})'.format(self=self, env=env))
-
 
 def purge_examples(app, env, docname):
     """Remove examples from ``env.sphinx_astropy_examples`` during the
@@ -153,3 +121,54 @@ def purge_examples(app, env, docname):
     env.sphinx_astropy_examples = {
         id_: example for id_, example in env.sphinx_astropy_examples.items()
         if example['docname'] != docname}
+
+
+def _check_for_existing_example(env, example_id, docname, lineno, title):
+    """Check if an example already exists in the build environment.
+
+    Parameters
+    ----------
+    env : sphinx.environment.BuildEnvironment
+        The build environment.
+    example_id : str
+        The example identifier (key for the ``env.sphinx_astropy_examples``
+        `dict`).
+    docname : str
+        The docname associated with the example.
+    lineno : int
+        The line number of the example in the document.
+    title : str
+        The title of the example.
+
+    Raises
+    ------
+    SphinxError
+       Raised if an existing example with the same ID exists in the
+       environment, comes from a different ``docname`` and ``lineno``.
+
+    Notes
+    -----
+    Only checking for an existing example with the same ``example_id``
+    raises false alarms during testing with multiple builds while
+    the numpydoc Sphinx extension is enabled. It seems that numpydoc is
+    causing the build environment to carry over between test functions
+    of the same root (even with different builders). Checking that the
+    existing example came from the same document and location (checking
+    ``docname`` and ``lineno`` is sufficient for identifying that the
+    existing example only came from a previous build or document read.
+    """
+    if example_id in env.sphinx_astropy_examples:
+        existing_example = env.sphinx_astropy_examples[example_id]
+        if existing_example['docname'] == docname \
+                and existing_example['lineno'] == lineno:
+            logger = getLogger(__name__)
+            logger.debug(
+                '[sphinx_astropy] Found an existing instance of example '
+                '"%s" from an earlier document read', title,
+                location=(docname, lineno))
+        else:
+            raise SphinxError(
+                'There is already an example titled "{title}" '
+                '({docname}:{lineno})'.format(title=title,
+                                              docname=docname,
+                                              lineno=lineno))
