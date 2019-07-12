@@ -7,6 +7,8 @@ from sphinx.testing.util import etree_parse
 from sphinx.util import logging
 from sphinx.errors import SphinxError
 
+from sphinx_astropy.ext.example import purge_examples
+
 # Sphinx pytest fixtures only available in Sphinx 1.7+
 pytest.importorskip("sphinx", minversion="1.7")
 
@@ -104,3 +106,29 @@ def test_example_directive_docstring(app, status, warning):
     targets = et.getroot().findall('.//target')
     refids = [t.attrib['refid'] for t in targets]
     assert 'example-src-using-example-func' in refids
+
+
+@pytest.mark.sphinx('dummy', testroot='example-gallery')
+def test_purge_examples(app, status, warning):
+    """Test purging examples as part of a ``env-purge-doc`` event.
+
+    To mock up this event we run a build then manually purge an example
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+
+    initial_docnames = set(
+        [ex['docname'] for ex in app.env.sphinx_astropy_examples.values()])
+    assert 'example-marker' in initial_docnames
+
+    purge_examples(app, app.env, 'example-marker')
+
+    after_docnames = set(
+        [ex['docname'] for ex in app.env.sphinx_astropy_examples.values()])
+    assert 'example-marker' not in after_docnames
+
+
+@pytest.mark.sphinx('dummy', testroot='example-gallery')
+def test_event_connections(app, status, warning):
+    assert purge_examples in app.events.listeners['env-purge-doc'].values()
