@@ -3,7 +3,7 @@
 text.
 """
 
-__all__ = ('ExampleMarkerDirective', 'purge_examples')
+__all__ = ('ExampleMarkerDirective', 'purge_examples', 'merge_examples')
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -121,6 +121,32 @@ def purge_examples(app, env, docname):
     env.sphinx_astropy_examples = {
         id_: example for id_, example in env.sphinx_astropy_examples.items()
         if example['docname'] != docname}
+
+
+def merge_examples(app, env, docnames, other):
+    """Merge ``env.sphinx_astropy_examples`` from parallel document reads
+    during the ``env-merge-info`` event.
+
+    Parameters
+    ----------
+    app : sphinx.application.Sphinx
+        The app instance.
+    env : sphinx.environment.BuildEnvironment
+        The build environment (modified in place).
+    docname : str
+        Name of the document behing purged during a ``env-purge-doc`` event.
+    other : sphinx.environment.BuildEnvironment
+        The build environment from the *other* parallel process.
+    """
+    if not hasattr(other, 'sphinx_astropy_examples'):
+        return
+    if not hasattr(env, 'sphinx_astropy_examples'):
+        env.sphinx_astropy_examples = {}
+
+    for example_id, example in other.sphinx_astropy_examples.items():
+        _check_for_existing_example(env, example_id, example['docname'],
+                                    example['lineno'], example['title'])
+        env.sphinx_astropy_examples[example_id] = example
 
 
 def _check_for_existing_example(env, example_id, docname, lineno, title):

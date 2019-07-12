@@ -1,16 +1,20 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+import os.path
+import shutil
 from xml.etree.ElementTree import tostring
 
 import pytest
+
+# Sphinx pytest fixtures only available in Sphinx 1.7+
+pytest.importorskip("sphinx", minversion="1.7")  # noqa E402
+
 from sphinx.testing.util import etree_parse
 from sphinx.util import logging
 from sphinx.errors import SphinxError
+from sphinx.cmd.build import build_main
 
-from sphinx_astropy.ext.example import purge_examples
-
-# Sphinx pytest fixtures only available in Sphinx 1.7+
-pytest.importorskip("sphinx", minversion="1.7")
+from sphinx_astropy.ext.example import purge_examples, merge_examples
 
 
 @pytest.mark.sphinx('xml', testroot='example-gallery')
@@ -132,3 +136,41 @@ def test_purge_examples(app, status, warning):
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
 def test_event_connections(app, status, warning):
     assert purge_examples in app.events.listeners['env-purge-doc'].values()
+    assert merge_examples in app.events.listeners['env-merge-info'].values()
+
+
+def test_parallel_reads(tmpdir, rootdir):
+    """Test that the examples extension works in a parallelized build.
+    """
+    case_dir = str(rootdir / 'test-example-gallery')
+    src_dir = os.path.join(tmpdir.strpath, 'docs')
+    shutil.copytree(case_dir, src_dir)
+
+    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
+
+    start_dir = os.path.abspath('.')
+    try:
+        os.chdir(src_dir)
+        status = build_main(argv=argv)
+    finally:
+        os.chdir(start_dir)
+    assert status == 0
+
+
+def test_parallel_reads_duplicates(tmpdir, rootdir):
+    """Test that the examples extension works in a parallelized build
+    where a failure from a duplicate example is expected.
+    """
+    case_dir = str(rootdir / 'test-example-gallery-duplicates')
+    src_dir = os.path.join(tmpdir.strpath, 'docs')
+    shutil.copytree(case_dir, src_dir)
+
+    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
+
+    start_dir = os.path.abspath('.')
+    try:
+        os.chdir(src_dir)
+        status = build_main(argv=argv)
+    finally:
+        os.chdir(start_dir)
+    assert status != 0

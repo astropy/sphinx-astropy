@@ -10,7 +10,7 @@ __all__ = ('setup',)
 
 from pkg_resources import get_distribution
 
-from .marker import ExampleMarkerDirective, purge_examples
+from .marker import ExampleMarkerDirective, purge_examples, merge_examples
 
 
 def setup(app):
@@ -30,6 +30,7 @@ def setup(app):
     """
     app.add_directive('example', ExampleMarkerDirective)
     app.connect('env-purge-doc', purge_examples)
+    app.connect('env-merge-info', merge_examples)
 
     return {'version': get_distribution('sphinx_astropy').version,
             # env_version needs to be incremented when the persisted data
