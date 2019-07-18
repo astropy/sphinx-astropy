@@ -4,8 +4,9 @@ Changes in sphinx-astropy
 1.2 (unreleased)
 ----------------
 
-- Updated minimum required version of Sphinx to 1.6 as Numpydoc dropped
-  suport for older ones. [#19]
+- Updated minimum required version of Sphinx to 1.7 as Numpydoc dropped
+  support for Sphinx older than 1.6 and the inherit docstring feature is
+  only available in Sphinx 1.7 or greater. [#19, #24]
 
 1.1.1 (2019-02-21)
 ------------------

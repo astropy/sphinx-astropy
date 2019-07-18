@@ -31,13 +31,6 @@ jobs:
             source activate sphinx17
             pip install .
             pytest sphinx_astropy
-      - run:
-          name: Run tests with Sphinx 1.6
-          command: |
-            conda create -q -n sphinx16 sphinx=1.6 pytest
-            source activate sphinx16
-            pip install .
-            pytest sphinx_astropy
       - run :
           name: Run tests with developer version of Sphinx
           command: |
