@@ -15,6 +15,30 @@ from sphinx.errors import SphinxError
 from sphinx.cmd.build import build_main
 
 from sphinx_astropy.ext.example import purge_examples, merge_examples
+from sphinx_astropy.ext.example.marker import (
+    format_title_to_example_id, format_title_to_source_ref_id)
+
+
+@pytest.mark.parametrize(
+    'title, expected',
+    [
+        ('Title of an example', 'title-of-an-example'),
+        # test unicode normalization
+        ('Title of an éxample', 'title-of-an-example')
+    ]
+)
+def test_format_title_to_example_id(title, expected):
+    assert expected == format_title_to_example_id(title)
+
+
+@pytest.mark.parametrize(
+    'title, expected',
+    [
+        ('Title of an example', 'example-src-title-of-an-example')
+    ]
+)
+def test_format_title_to_source_ref_id(title, expected):
+    assert expected == format_title_to_source_ref_id(title)
 
 
 @pytest.mark.sphinx('xml', testroot='example-gallery')
