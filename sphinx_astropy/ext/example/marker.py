@@ -57,7 +57,12 @@ class ExampleMarkerDirective(Directive):
 
         self.title = self.arguments[0].strip()
 
-        self.example_id = '-'.join(('example-src', nodes.make_id(self.title)))
+        # ID for example within the build environment
+        self.example_id = nodes.make_id(self.title)
+        # ID for the reference node. The example-src- prefix distinguishes
+        # this ID as the source of the example, rather than a reference to
+        # the standalone example page.
+        self.ref_id = '-'.join(('example-src', self.example_id))
 
         _check_for_existing_example(env, self.example_id, env.docname,
                                     self.lineno, self.title)
@@ -83,7 +88,7 @@ class ExampleMarkerDirective(Directive):
 
         # The target node is for backlinks from an example page to the
         # source of the example in the "main" docs.
-        target_node = nodes.target('', '', ids=[self.example_id])
+        target_node = nodes.target('', '', ids=[self.ref_id])
         self.state.document.note_explicit_target(target_node)
 
         # Persist the example for post-processing into the gallery
@@ -92,7 +97,8 @@ class ExampleMarkerDirective(Directive):
             'lineno': self.lineno,
             'title': self.title,
             'tags': self.tags,
-            'content': self.content
+            'content': self.content,
+            'ref_id': self.ref_id,
         }
 
         output_nodes = [target_node]

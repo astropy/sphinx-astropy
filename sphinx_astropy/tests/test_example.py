@@ -53,27 +53,30 @@ def test_example_env_persistence(app, status, warning):
     examples = app.env.sphinx_astropy_examples
 
     known_examples = [
-        'example-src-example-with-two-paragraphs',
-        'example-src-tagged-example',
-        'example-src-example-with-multiple-tags',
-        'example-src-example-with-subsections'
+        'example-with-two-paragraphs',
+        'tagged-example',
+        'example-with-multiple-tags',
+        'example-with-subsections'
     ]
     for k in known_examples:
         assert k in examples
 
     # Test tags
-    assert examples['example-src-example-with-two-paragraphs']['tags'] == set()
-    assert examples['example-src-tagged-example']['tags'] == set(['tag-a'])
-    assert examples['example-src-example-with-multiple-tags']['tags'] \
+    assert examples['example-with-two-paragraphs']['tags'] == set()
+    assert examples['tagged-example']['tags'] == set(['tag-a'])
+    assert examples['example-with-multiple-tags']['tags'] \
         == set(['tag-a', 'tag-b'])
 
-    ex = examples['example-src-example-with-two-paragraphs']
+    ex = examples['example-with-two-paragraphs']
 
     # Test title
     assert ex['title'] == 'Example with two paragraphs'
 
     # Test docname
     assert ex['docname'] == 'example-marker'
+
+    # Test ref_id
+    assert ex['ref_id'] == 'example-src-example-with-two-paragraphs'
 
     # Test content
     assert str(ex['content'][0]) == 'This is the first paragraph.'
@@ -102,7 +105,7 @@ def test_example_directive_docstring(app, status, warning):
 
     # Check the example made it to the app environment
     examples = app.env.sphinx_astropy_examples
-    assert 'example-src-using-example-func' in examples
+    assert 'using-example-func' in examples
 
     # Check that the reference target got added to the API reference
     et = etree_parse(app.outdir / 'example_func.xml')
