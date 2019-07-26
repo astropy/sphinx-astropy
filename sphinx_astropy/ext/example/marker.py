@@ -99,6 +99,7 @@ class ExampleMarkerDirective(Directive):
             'title': self.title,
             'tags': self.tags,
             'content': self.content,
+            'content_node': container_node.deepcopy(),
             'ref_id': self.ref_id,
         }
 
