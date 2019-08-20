@@ -11,6 +11,7 @@ __all__ = ('setup',)
 from pkg_resources import get_distribution
 
 from .marker import ExampleMarkerDirective, purge_examples, merge_examples
+from .preprocessor import preprocess_examples
 
 
 def setup(app):
@@ -29,12 +30,16 @@ def setup(app):
         for more information.
     """
     app.add_directive('example', ExampleMarkerDirective)
+    app.connect('builder-inited', preprocess_examples)
     app.connect('env-purge-doc', purge_examples)
     app.connect('env-merge-info', merge_examples)
 
     # Configures the directory, relative to the documentation source root,
     # where example pages are created.
     app.add_config_value('astropy_examples_dir', 'examples', 'env')
+
+    # Configures the character to use for h1 underlines in rst
+    app.add_config_value('astropy_examples_h1', '#', 'env')
 
     return {'version': get_distribution('sphinx_astropy').version,
             # env_version needs to be incremented when the persisted data

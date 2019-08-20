@@ -1,12 +1,15 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-__all__ = ('detect_examples',)
+__all__ = ('preprocess_examples', 'detect_examples')
 
 import re
+import os
 
 from sphinx.util.logging import getLogger
 
 from .marker import format_title_to_example_id
+from .examplepages import ExamplePage
+from .templates import Renderer
 
 
 EXAMPLE_PATTERN = re.compile(
@@ -31,6 +34,39 @@ See also
 --------
 detect_examples
 """
+
+
+def preprocess_examples(app):
+    """Generate the example gallery landing pages and stubs for individual
+    standalone example pages by detecting example directives in the
+    reStructuredText source.
+
+    This fun is run as part of the ``builder-inited`` event.
+
+    Parameters
+    ----------
+    app : `sphinx.application.Sphinx`
+        The application instance.
+    """
+    logger = getLogger(__name__)
+    logger.debug('[sphinx_astropy] preprocessing example gallery pages')
+
+    # Create directory for example pages inside the documentation source dir
+    examples_dir = os.path.join(app.srcdir, app.config.astropy_examples_dir)
+    os.makedirs(examples_dir, exist_ok=True)
+
+    renderer = Renderer(
+        builder=app.builder,
+        h1_underline=app.config.astropy_examples_h1)
+
+    example_pages = []
+    for docname in app.env.found_docs:
+        filepath = app.env.doc2path(docname)
+        for detected_example in detect_examples(filepath, app.env):
+            example_page = ExamplePage(detected_example, examples_dir,
+                                       app.srcdir)
+            example_page.render_and_save(renderer)
+            example_pages.append(example_page)
 
 
 def detect_examples(filepath, env):

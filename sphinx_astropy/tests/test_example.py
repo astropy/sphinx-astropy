@@ -18,7 +18,8 @@ from sphinx.cmd.build import build_main
 from sphinx_astropy.ext.example import purge_examples, merge_examples
 from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id)
-from sphinx_astropy.ext.example.preprocessor import detect_examples
+from sphinx_astropy.ext.example.preprocessor import (
+    detect_examples, preprocess_examples)
 from sphinx_astropy.ext.example.examplepages import ExamplePage
 from sphinx_astropy.ext.example.templates import Renderer
 
@@ -172,8 +173,11 @@ def test_app_setup(app, status, warning):
     """Test that event callbacks, directives, and nodes got added to the
     Sphinx app.
     """
-    assert purge_examples in app.events.listeners['env-purge-doc'].values()
-    assert merge_examples in app.events.listeners['env-merge-info'].values()
+    # Check event callbacks
+    listeners = app.events.listeners
+    assert purge_examples in listeners['env-purge-doc'].values()
+    assert merge_examples in listeners['env-merge-info'].values()
+    assert preprocess_examples in listeners['builder-inited'].values()
 
     # Check registered configs
     assert 'astropy_examples_dir' in app.config
@@ -274,3 +278,22 @@ def test_example_page(app, status, warning):
         'Example content.'
     )
     assert rendered_page == expected
+
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_example_page_rendering(app, status, warning):
+    """Test that examples pages are being rendered in the source tree by
+    the preprocess_examples hook for builder-inited.
+    """
+    examples_source_dir = os.path.join(
+        app.srcdir, app.config.astropy_examples_dir)
+    example_page_paths = [
+        'example-with-two-paragraphs.rst',
+        'tagged-example.rst',
+        'example-with-multiple-tags.rst',
+        'example-with-subsections.rst'
+    ]
+    example_page_paths = map(lambda x: os.path.join(examples_source_dir, x),
+                             example_page_paths)
+    for path in example_page_paths:
+        assert os.path.exists(path)
