@@ -166,9 +166,15 @@ def test_purge_examples(app, status, warning):
 
 
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
-def test_event_connections(app, status, warning):
+def test_app_setup(app, status, warning):
+    """Test that event callbacks, directives, and nodes got added to the
+    Sphinx app.
+    """
     assert purge_examples in app.events.listeners['env-purge-doc'].values()
     assert merge_examples in app.events.listeners['env-merge-info'].values()
+
+    # Check registered configs
+    assert 'astropy_examples_dir' in app.config
 
 
 def test_parallel_reads(tmpdir, rootdir):

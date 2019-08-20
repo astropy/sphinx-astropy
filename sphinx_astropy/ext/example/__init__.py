@@ -32,6 +32,10 @@ def setup(app):
     app.connect('env-purge-doc', purge_examples)
     app.connect('env-merge-info', merge_examples)
 
+    # Configures the directory, relative to the documentation source root,
+    # where example pages are created.
+    app.add_config_value('astropy_examples_dir', 'examples', 'env')
+
     return {'version': get_distribution('sphinx_astropy').version,
             # env_version needs to be incremented when the persisted data
             # formats of the extension change.
