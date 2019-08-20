@@ -19,6 +19,7 @@ from sphinx_astropy.ext.example import purge_examples, merge_examples
 from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id)
 from sphinx_astropy.ext.example.preprocessor import detect_examples
+from sphinx_astropy.ext.example.examplepages import ExamplePage
 
 
 @pytest.mark.parametrize(
@@ -244,3 +245,19 @@ def test_detect_examples(app, status, warning):
     assert examples[1] >= examples[0]
     assert examples[1] != examples[0]
     assert examples[0] == examples[0]
+
+
+@pytest.mark.sphinx('dummy', testroot='example-gallery')
+def test_example_page(app, status, warning):
+    env = app.env
+    test_filepath = str(app.srcdir / 'example-marker.rst')
+    examples = list(detect_examples(test_filepath, env))
+    example = examples[0]
+
+    examples_dir = os.path.join(app.srcdir, app.config.astropy_examples_dir)
+    example_page = ExamplePage(example, examples_dir, app.srcdir)
+
+    assert example_page.source == example
+    assert example_page.rel_docname == 'example-with-two-paragraphs'
+    assert example_page.abs_docname == '/examples/example-with-two-paragraphs'
+    assert example_page.filepath.endswith(example_page.abs_docname + '.rst')

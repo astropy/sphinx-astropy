@@ -1,0 +1,80 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""APIs for generating standalone example pages.
+"""
+
+__all__ = ('ExamplePage',)
+
+import os
+
+
+class ExamplePage:
+    """A class that renders and represents a standalone example page.
+
+    Parameters
+    ----------
+    example_source : sphinx_astropy.ext.example.preprocessor.ExampleSource
+        Object describing the source of the example.
+    examples_dir : str
+        The directory path where example pages are written.
+    srcdir : str
+        The root directory path of the Sphinx project's source.
+    """
+
+    def __init__(self, example_source, examples_dir, srcdir):
+        self._example_source = example_source
+        self._examples_dir = examples_dir
+        self._srcdir = srcdir
+
+    @property
+    def source(self):
+        """Metadata about the source of the example, a
+        `sphinx_astropy.ext.example.preprocessor.ExampleSource` instance.`
+        """
+        return self._example_source
+
+    def __str__(self):
+        return '<ExamplePage {self.abs_docname!r}>'.format(self=self)
+
+    def __repr__(self):
+        return ('ExamplePage({self.example_source!r}, {self.docname!r},'
+                ' tags={self.tags!r})').format(self=self)
+
+    def __eq__(self, other):
+        return self.source == other.source
+
+    def __ne__(self, other):
+        return self.source != other.source
+
+    def __lt__(self, other):
+        return self.source < other.source
+
+    def __le__(self, other):
+        return self.source <= other.source
+
+    def __gt__(self, other):
+        return self.source > other.source
+
+    def __ge__(self, other):
+        return self.source >= other.source
+
+    @property
+    def rel_docname(self):
+        """The docname of the standalone example page relative to the
+        examples directory.
+        """
+        return self.source.example_id
+
+    @property
+    def abs_docname(self):
+        """The absolute docname of the standalone example page.
+        """
+        return '/' + os.path.splitext(
+            os.path.relpath(self.filepath, start=self._srcdir))[0]
+
+    @property
+    def filepath(self):
+        """The filesystem path where the reStructuredText file for the
+        standalone example page is rendered.
+        """
+        return os.path.join(self._examples_dir,
+                            self.rel_docname + '.rst')
