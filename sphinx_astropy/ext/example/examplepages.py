@@ -78,3 +78,35 @@ class ExamplePage:
         """
         return os.path.join(self._examples_dir,
                             self.rel_docname + '.rst')
+
+    def render(self, renderer):
+        """Render the source for the standalone example page using a
+        ``astropy_example/examplepage.rst`` template.
+
+        Parameters
+        ----------
+        renderer : sphinx_astropy.ext.example.templates.Renderer
+            The Jinja template renderer.
+
+        Returns
+        -------
+        content : str
+            The content of the standalone example page.
+        """
+        context = {
+            'title': self.source.title
+        }
+        return renderer.render('astropy_example/examplepage.rst', context)
+
+    def render_and_save(self, renderer):
+        """Render the standalone example page and write it to `filepath`
+        using the ``astropy_example/examplepage.rst`` template.
+
+        Parameters
+        ----------
+        renderer : sphinx_astropy.ext.example.templates.Renderer
+            The Jinja template renderer.
+        """
+        content = self.render(renderer)
+        with open(self.filepath, 'w') as fh:
+            fh.write(content)

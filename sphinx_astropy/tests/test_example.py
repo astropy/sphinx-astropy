@@ -20,6 +20,7 @@ from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id)
 from sphinx_astropy.ext.example.preprocessor import detect_examples
 from sphinx_astropy.ext.example.examplepages import ExamplePage
+from sphinx_astropy.ext.example.templates import Renderer
 
 
 @pytest.mark.parametrize(
@@ -261,3 +262,15 @@ def test_example_page(app, status, warning):
     assert example_page.rel_docname == 'example-with-two-paragraphs'
     assert example_page.abs_docname == '/examples/example-with-two-paragraphs'
     assert example_page.filepath.endswith(example_page.abs_docname + '.rst')
+
+    renderer = Renderer(h1_underline='#')
+    rendered_page = example_page.render(renderer)
+    expected = (
+        ':orphan:\n'
+        '\n'
+        'Example with two paragraphs\n'
+        '###########################\n'
+        '\n'
+        'Example content.'
+    )
+    assert rendered_page == expected
