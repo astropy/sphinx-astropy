@@ -18,6 +18,7 @@ from sphinx.cmd.build import build_main
 from sphinx_astropy.ext.example import purge_examples, merge_examples
 from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id)
+from sphinx_astropy.ext.example.preprocessor import detect_examples
 
 
 @pytest.mark.parametrize(
@@ -205,3 +206,35 @@ def test_parallel_reads_duplicates(tmpdir, rootdir):
     finally:
         os.chdir(start_dir)
     assert status != 0
+
+
+@pytest.mark.sphinx('dummy', testroot='example-gallery')
+def test_detect_examples(app, status, warning):
+    """Test that the detect_examples function can match "examples"
+    directives.
+    """
+    env = app.env
+    test_filepath = str(app.srcdir / 'example-marker.rst')
+    examples = list(detect_examples(test_filepath, env))
+
+    assert examples[0].title == 'Example with two paragraphs'
+    assert len(examples[0].tags) == 0
+
+    assert examples[1].title == 'Tagged example'
+    assert examples[1].tags == set(['tag-a'])
+    assert repr(examples[1]) == ("ExampleSource('Tagged example', "
+                                 "'/example-marker', tags={'tag-a'})")
+
+    assert examples[2].title == 'Example with multiple tags'
+    assert examples[2].tags == set(['tag-a', 'tag-b'])
+
+    assert examples[3].title == 'Example with subsections'
+    assert examples[3].tags == set(['tag-b'])
+
+    # Test comparisons (by title)
+    assert examples[0] < examples[1]
+    assert examples[0] <= examples[1]
+    assert examples[1] > examples[0]
+    assert examples[1] >= examples[0]
+    assert examples[1] != examples[0]
+    assert examples[0] == examples[0]
