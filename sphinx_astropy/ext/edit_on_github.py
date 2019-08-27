@@ -73,7 +73,7 @@ def import_object(modname, name):
 
 
 def get_url_base(app):
-    return 'http://github.com/%s/tree/%s/' % (
+    return 'https://github.com/%s/tree/%s/' % (
         app.config.edit_on_github_project,
         app.config.edit_on_github_branch)
 
