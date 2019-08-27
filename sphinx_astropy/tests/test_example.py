@@ -270,8 +270,6 @@ def test_example_page(app, status, warning):
     renderer = Renderer(h1_underline='#')
     rendered_page = example_page.render(renderer)
     expected = (
-        ':orphan:\n'
-        '\n'
         'Example with two paragraphs\n'
         '###########################\n'
         '\n'
@@ -297,3 +295,37 @@ def test_example_page_rendering(app, status, warning):
                              example_page_paths)
     for path in example_page_paths:
         assert os.path.exists(path)
+
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_landing_page(app, status, warning):
+    """Test the rendering of the landing page.
+    """
+    examples_landing_page_path = os.path.join(
+        app.srcdir, app.config.astropy_examples_dir, 'index.rst')
+    with open(examples_landing_page_path) as fh:
+        contents = fh.read()
+
+    expected = (
+        'Example gallery\n'
+        '###############\n'
+        '\n'
+        '.. hidden toctree for Sphinx navigation\n'
+        '\n'
+        '.. toctree::\n'
+        '   :hidden:\n'
+        '\n'
+        '   example-with-multiple-tags\n'
+        '   example-with-subsections\n'
+        '   example-with-two-paragraphs\n'
+        '   tagged-example\n'
+        '\n'
+        '.. Listing for styling (eventually will become a tiled grid)\n'
+        '\n'
+        '- :doc:`Example with multiple tags <example-with-multiple-tags>`\n'
+        '- :doc:`Example with subsections <example-with-subsections>`\n'
+        '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
+        '- :doc:`Tagged example <tagged-example>`'
+    )
+
+    assert contents == expected

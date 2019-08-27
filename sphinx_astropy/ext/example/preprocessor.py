@@ -9,6 +9,7 @@ from sphinx.util.logging import getLogger
 
 from .marker import format_title_to_example_id
 from .examplepages import ExamplePage
+from .indexpages import LandingPage
 from .templates import Renderer
 
 
@@ -67,6 +68,10 @@ def preprocess_examples(app):
                                        app.srcdir)
             example_page.render_and_save(renderer)
             example_pages.append(example_page)
+    example_pages.sort()
+
+    landing_page = LandingPage(example_pages, examples_dir, app.srcdir)
+    landing_page.render_and_save(renderer)
 
 
 def detect_examples(filepath, env):

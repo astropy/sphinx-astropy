@@ -5,3 +5,4 @@ test-example-gallery
    :glob:
 
    *
+   examples/index
