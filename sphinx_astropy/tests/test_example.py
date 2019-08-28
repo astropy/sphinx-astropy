@@ -298,14 +298,13 @@ def test_example_page_rendering(app, status, warning):
 
 
 @pytest.mark.sphinx('html', testroot='example-gallery')
-def test_landing_page(app, status, warning):
-    """Test the rendering of the landing page.
+def test_index_pages(app, status, warning):
+    """Test the rendering of the landing page and the tag pages.
     """
     examples_landing_page_path = os.path.join(
         app.srcdir, app.config.astropy_examples_dir, 'index.rst')
     with open(examples_landing_page_path) as fh:
         contents = fh.read()
-
     expected = (
         'Example gallery\n'
         '###############\n'
@@ -327,5 +326,19 @@ def test_landing_page(app, status, warning):
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
         '- :doc:`Tagged example <tagged-example>`'
     )
+    assert contents == expected
 
+    tag_a_page_path = os.path.join(
+        app.srcdir, app.config.astropy_examples_dir, 'tags', 'tag-a.rst')
+    with open(tag_a_page_path) as fh:
+        contents = fh.read()
+    expected = (
+        ':orphan:\n'
+        '\n'
+        'Examples tagged tag-a\n'
+        '#####################\n'
+        '\n'
+        '- :doc:`Example with multiple tags </examples/example-with-multiple-tags>`\n'
+        '- :doc:`Tagged example </examples/tagged-example>`'
+    )
     assert contents == expected

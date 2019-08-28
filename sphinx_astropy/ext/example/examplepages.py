@@ -24,6 +24,7 @@ class ExamplePage:
         self._example_source = example_source
         self._examples_dir = examples_dir
         self._srcdir = srcdir
+        self._tag_pages = []
 
     @property
     def source(self):
@@ -78,6 +79,35 @@ class ExamplePage:
         """
         return os.path.join(self._examples_dir,
                             self.rel_docname + '.rst')
+
+    def insert_tag_page(self, tag_page):
+        """Associate a tag page with the example page.
+
+        Typically this API is called by
+        `sphinx_astropy.ext.example.indexpages.generate_tag_pages`, which
+        simultaneously creates tag pages and associates eample pages with
+        those tag pages.
+
+        Parameters
+        ----------
+        tag_page : sphinx_astropy.ext.examples.indexpages.TagPage
+            A tag page.
+
+        See also
+        --------
+        tag_pages
+        """
+        self._tag_pages.append(tag_page)
+        self._tag_pages.sort()
+
+    @property
+    def tag_pages(self):
+        """Iterator over the tag pages
+        (`sphinx_astropy.ext.examples.indexpages.TagPage`) associated with
+        the example page.
+        """
+        for tag_page in self._tag_pages:
+            yield tag_page
 
     def render(self, renderer):
         """Render the source for the standalone example page using a
