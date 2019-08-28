@@ -322,9 +322,13 @@ def test_index_pages(app, status, warning):
         '.. Listing for styling (eventually will become a tiled grid)\n'
         '\n'
         '- :doc:`Example with multiple tags <example-with-multiple-tags>`\n'
+        '  (:doc:`tag-a </examples/tags/tag-a>`,\n'
+        '  :doc:`tag-b </examples/tags/tag-b>`)\n'
         '- :doc:`Example with subsections <example-with-subsections>`\n'
+        '  (:doc:`tag-b </examples/tags/tag-b>`)\n'
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
-        '- :doc:`Tagged example <tagged-example>`'
+        '- :doc:`Tagged example <tagged-example>`\n'
+        '  (:doc:`tag-a </examples/tags/tag-a>`)'
     )
     assert contents == expected
 
@@ -339,6 +343,8 @@ def test_index_pages(app, status, warning):
         '#####################\n'
         '\n'
         '- :doc:`Example with multiple tags </examples/example-with-multiple-tags>`\n'
-        '- :doc:`Tagged example </examples/tagged-example>`'
+        '  (:doc:`tag-a </examples/tags/tag-a>`)\n'
+        '- :doc:`Tagged example </examples/tagged-example>`\n'
+        '  (:doc:`tag-a </examples/tags/tag-a>`)'
     )
     assert contents == expected
