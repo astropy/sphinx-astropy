@@ -2,9 +2,13 @@
 """APIs for generating standalone example pages.
 """
 
-__all__ = ('ExamplePage',)
+__all__ = ('ExamplePage', 'ExampleContentDirective')
 
 import os
+
+from docutils import nodes
+from docutils.parsers.rst import Directive
+from sphinx.util.logging import getLogger
 
 
 class ExamplePage:
@@ -141,3 +145,34 @@ class ExamplePage:
         content = self.render(renderer)
         with open(self.filepath, 'w') as fh:
             fh.write(content)
+
+
+class ExampleContentDirective(Directive):
+    """A directive that inserts content from an example marked by the
+    ``example`` directive into place.
+
+    Example:
+
+    .. code-block:: rst
+
+       .. example-content:: example-id
+
+    The argument is the ID of the example.
+    """
+
+    _logger = getLogger(__name__)
+    has_content = False
+    required_arguments = 1  # example ID
+
+    def run(self):
+        self.env = self.state.document.settings.env
+        self.example_id = self.arguments[0].strip()
+        try:
+            example = self.env.sphinx_astropy_examples[self.example_id]
+        except (KeyError, AttributeError):
+            message = 'Example {} not found in the environment'.format(
+                self.example_id)
+            self._logger.warning(message)
+            return [nodes.Text(message, message)]
+
+        return [example['content_node']]
