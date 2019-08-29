@@ -102,12 +102,11 @@ class ExamplePage:
 
     @property
     def tag_pages(self):
-        """Iterator over the tag pages
+        """Sequence of tag pages
         (`sphinx_astropy.ext.examples.indexpages.TagPage`) associated with
         the example page.
         """
-        for tag_page in self._tag_pages:
-            yield tag_page
+        return self._tag_pages
 
     def render(self, renderer):
         """Render the source for the standalone example page using a
