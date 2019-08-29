@@ -1,6 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-__all__ = ('preprocess_examples', 'detect_examples')
+__all__ = ('preprocess_examples', 'detect_examples',
+           'reorder_example_page_reading')
 
 import re
 import os
@@ -179,3 +180,26 @@ class ExampleSource:
 
     def __ge__(self, other):
         return self.title >= other.title
+
+
+def reorder_example_page_reading(app, env, docnames):
+    """Reorder the ``found_docs`` in the environment so that example pages
+    are always read last.
+
+    This ensures that examples have been parsed and read into the environment
+    by the time the example pages get processed.
+
+    This should be called by the ``env-before-read-docs`` event handler.
+    """
+    example_dir_prefix = app.config.astropy_examples_dir
+    if not example_dir_prefix.endswith('/'):
+        example_dir_prefix = example_dir_prefix + '/'
+
+    # docnames that are example pages (or at least, created by this
+    # examples extension
+    example_docnames = [n for n in docnames
+                        if n.startswith(example_dir_prefix)]
+    # Move these docnames to the end (modifying docnames in place)
+    for example_docname in example_docnames:
+        docnames.remove(example_docname)
+        docnames.append(example_docname)

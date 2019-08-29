@@ -12,7 +12,7 @@ from pkg_resources import get_distribution
 
 from .examplepages import ExampleContentDirective
 from .marker import ExampleMarkerDirective, purge_examples, merge_examples
-from .preprocessor import preprocess_examples
+from .preprocessor import preprocess_examples, reorder_example_page_reading
 
 
 def setup(app):
@@ -35,6 +35,7 @@ def setup(app):
     app.connect('builder-inited', preprocess_examples)
     app.connect('env-purge-doc', purge_examples)
     app.connect('env-merge-info', merge_examples)
+    app.connect('env-before-read-docs', reorder_example_page_reading)
 
     # Configures the directory, relative to the documentation source root,
     # where example pages are created.
