@@ -1,3 +1,11 @@
 {{ title | escape | h1underline}}
 
+From :doc:`{{ example.docname }}`.
+{%- if tag_pages %}
+Tagged:
+{%- for tag_page in tag_pages %}
+:doc:`{{ tag_page.name }} <{{ tag_page.abs_docname }}>`{% if not loop.last %},{% else %}.{% endif %}
+{%- endfor %}
+{%- endif %}
+
 Example content.

@@ -255,6 +255,9 @@ def test_detect_examples(app, status, warning):
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
 def test_example_page(app, status, warning):
     env = app.env
+    renderer = Renderer(h1_underline='#')
+
+    # Test using example-with-two-paragraphs
     test_filepath = str(app.srcdir / 'example-marker.rst')
     examples = list(detect_examples(test_filepath, env))
     example = examples[0]
@@ -267,11 +270,12 @@ def test_example_page(app, status, warning):
     assert example_page.abs_docname == '/examples/example-with-two-paragraphs'
     assert example_page.filepath.endswith(example_page.abs_docname + '.rst')
 
-    renderer = Renderer(h1_underline='#')
     rendered_page = example_page.render(renderer)
     expected = (
         'Example with two paragraphs\n'
         '###########################\n'
+        '\n'
+        'From :doc:`/example-marker`.\n'
         '\n'
         'Example content.'
     )
@@ -291,10 +295,45 @@ def test_example_page_rendering(app, status, warning):
         'example-with-multiple-tags.rst',
         'example-with-subsections.rst'
     ]
-    example_page_paths = map(lambda x: os.path.join(examples_source_dir, x),
-                             example_page_paths)
+    example_page_paths = list(
+        map(lambda x: os.path.join(examples_source_dir, x),
+            example_page_paths)
+    )
     for path in example_page_paths:
         assert os.path.exists(path)
+
+    # Test rendering of tagged-example
+    example_page_path = example_page_paths[1]
+    with open(example_page_path) as fh:
+        rendered_page = fh.read()
+    expected = (
+        'Tagged example\n'
+        '##############\n'
+        '\n'
+        'From :doc:`/example-marker`.\n'
+        'Tagged:\n'
+        ':doc:`tag-a </examples/tags/tag-a>`.\n'
+        '\n'
+        'Example content.'
+    )
+    assert rendered_page == expected
+
+    # Test rendering of example-with-multiple-tags
+    example_page_path = example_page_paths[2]
+    with open(example_page_path) as fh:
+        rendered_page = fh.read()
+    expected = (
+        'Example with multiple tags\n'
+        '##########################\n'
+        '\n'
+        'From :doc:`/example-marker`.\n'
+        'Tagged:\n'
+        ':doc:`tag-a </examples/tags/tag-a>`,\n'
+        ':doc:`tag-b </examples/tags/tag-b>`.\n'
+        '\n'
+        'Example content.'
+    )
+    assert rendered_page == expected
 
 
 @pytest.mark.sphinx('html', testroot='example-gallery')

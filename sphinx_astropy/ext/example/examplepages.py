@@ -123,7 +123,9 @@ class ExamplePage:
             The content of the standalone example page.
         """
         context = {
-            'title': self.source.title
+            'title': self.source.title,
+            'tag_pages': self.tag_pages,
+            'example': self.source
         }
         return renderer.render('astropy_example/examplepage.rst', context)
 
