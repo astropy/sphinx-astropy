@@ -277,7 +277,7 @@ def test_example_page(app, status, warning):
         '\n'
         'From :doc:`/example-marker`.\n'
         '\n'
-        'Example content.'
+        '.. example-content:: example-with-two-paragraphs'
     )
     assert rendered_page == expected
 
@@ -314,7 +314,7 @@ def test_example_page_rendering(app, status, warning):
         'Tagged:\n'
         ':doc:`tag-a </examples/tags/tag-a>`.\n'
         '\n'
-        'Example content.'
+        '.. example-content:: tagged-example'
     )
     assert rendered_page == expected
 
@@ -331,7 +331,7 @@ def test_example_page_rendering(app, status, warning):
         ':doc:`tag-a </examples/tags/tag-a>`,\n'
         ':doc:`tag-b </examples/tags/tag-b>`.\n'
         '\n'
-        'Example content.'
+        '.. example-content:: example-with-multiple-tags'
     )
     assert rendered_page == expected
 

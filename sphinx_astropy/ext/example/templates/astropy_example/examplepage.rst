@@ -8,4 +8,4 @@ Tagged:
 {%- endfor %}
 {%- endif %}
 
-Example content.
+.. example-content:: {{ example.example_id }}
