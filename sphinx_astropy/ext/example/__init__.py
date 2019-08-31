@@ -48,5 +48,5 @@ def setup(app):
             # env_version needs to be incremented when the persisted data
             # formats of the extension change.
             'env_version': 1,
-            'parallel_read_safe': True,
+            'parallel_read_safe': False,
             'parallel_write_safe': True}
