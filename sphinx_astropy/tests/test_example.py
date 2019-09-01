@@ -356,6 +356,7 @@ def test_index_pages(app, status, warning):
         '   example-with-multiple-tags\n'
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
+        '   intersphinx-link\n'
         '   tagged-example\n'
         '\n'
         '.. Listing for styling (eventually will become a tiled grid)\n'
@@ -366,6 +367,8 @@ def test_index_pages(app, status, warning):
         '- :doc:`Example with subsections <example-with-subsections>`\n'
         '  (:doc:`tag-b </examples/tags/tag-b>`)\n'
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
+        '- :doc:`Intersphinx link <intersphinx-link>`\n'
+        '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Tagged example <tagged-example>`\n'
         '  (:doc:`tag-a </examples/tags/tag-a>`)'
     )
