@@ -9,6 +9,7 @@ import os
 from docutils import nodes
 from docutils.parsers.rst import Directive
 from sphinx.util.logging import getLogger
+from sphinx.addnodes import pending_xref
 
 
 class ExamplePage:
@@ -174,5 +175,13 @@ class ExampleContentDirective(Directive):
                 self.example_id)
             self._logger.warning(message)
             return [nodes.Text(message, message)]
+
+        # Adapt internal links to work from the standalone example page
+        # rather than the source page.
+        for node in example['content_node'].traverse():
+            if isinstance(node, pending_xref):
+                # Switch the refdoc to be the current doc. This will ensure
+                # the link resolves correctly from the standalone example page.
+                node['refdoc'] = self.env.docname
 
         return [example['content_node']]

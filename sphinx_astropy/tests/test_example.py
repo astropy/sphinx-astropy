@@ -1,5 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from html.parser import HTMLParser
 import os.path
 import shutil
 from xml.etree.ElementTree import tostring
@@ -390,3 +391,61 @@ def test_index_pages(app, status, warning):
         '  (:doc:`tag-a </examples/tags/tag-a>`)'
     )
     assert contents == expected
+
+
+class ReferenceInternalHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for Sphinx's internal
+    reference link.
+
+    Internal reference links have a class ``reference internal``. The `links`
+    attribute is a list of such links, which are represented as a dictionary
+    of their attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.links = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            try:
+                if 'reference internal' in attrdict['class']:
+                    # matches
+                    self.links.append(attrdict)
+            except KeyError:
+                pass
+
+    def get_link_matching_title(self, title):
+        """Get the first link matching a given title attribute.
+        """
+        for link in self.links:
+            try:
+                if link['title'] == title:
+                    return link
+            except KeyError:
+                pass
+        raise ValueError('No link found with a title of {}'.format(title))
+
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_links(app, status, warning):
+    """Test link resolution on standalone example pages.
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+    print(app.outdir)
+
+    # The intersphinx-link example has an example of an intersphinx link.
+    path = app.outdir / 'examples/intersphinx-link.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceInternalHtmlParser()
+    parser.feed(html)
+    # The intersphinx link itself
+    link = parser.get_link_matching_title(
+        'sphinx_astropy.tests.example_module.example.example_func')
+    # Make sure the intersphinx link's href got adjusted to be relative
+    # to the example page.
+    assert link['href'] == '../example_func.html#sphinx_astropy.tests.example_module.example.example_func'
