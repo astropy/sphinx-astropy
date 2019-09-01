@@ -459,3 +459,13 @@ def test_links(app, status, warning):
     parser = ReferenceInternalHtmlParser()
     parser.feed(html)
     assert parser.has_href('../example-marker.html#example-link-target')
+
+    # The header-reference-target-example example has an example of a ref
+    # link to a target on a header that's also part of the example content.
+    # This shows that the link ends up pointing back to the original.
+    path = app.outdir / 'examples/header-reference-target-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceInternalHtmlParser()
+    parser.feed(html)
+    assert parser.has_href('../ref-targets.html#section-target')
