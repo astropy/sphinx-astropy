@@ -1,3 +1,5 @@
+.. _example-link-target:
+
 Page with an example
 ====================
 

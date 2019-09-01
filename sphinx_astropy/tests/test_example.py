@@ -358,6 +358,7 @@ def test_index_pages(app, status, warning):
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
         '   intersphinx-link\n'
+        '   ref-link\n'
         '   tagged-example\n'
         '\n'
         '.. Listing for styling (eventually will become a tiled grid)\n'
@@ -369,6 +370,8 @@ def test_index_pages(app, status, warning):
         '  (:doc:`tag-b </examples/tags/tag-b>`)\n'
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
         '- :doc:`Intersphinx link <intersphinx-link>`\n'
+        '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Ref link <ref-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Tagged example <tagged-example>`\n'
         '  (:doc:`tag-a </examples/tags/tag-a>`)'
@@ -416,16 +419,13 @@ class ReferenceInternalHtmlParser(HTMLParser):
             except KeyError:
                 pass
 
-    def get_link_matching_title(self, title):
-        """Get the first link matching a given title attribute.
+    def has_href(self, href):
+        """Test if a link with a particular href is in the parsed HTML.
         """
         for link in self.links:
-            try:
-                if link['title'] == title:
-                    return link
-            except KeyError:
-                pass
-        raise ValueError('No link found with a title of {}'.format(title))
+            if link['href'] == href:
+                return True
+        return False
 
 
 @pytest.mark.sphinx('html', testroot='example-gallery')
@@ -443,9 +443,16 @@ def test_links(app, status, warning):
         html = fh.read()
     parser = ReferenceInternalHtmlParser()
     parser.feed(html)
-    # The intersphinx link itself
-    link = parser.get_link_matching_title(
-        'sphinx_astropy.tests.example_module.example.example_func')
     # Make sure the intersphinx link's href got adjusted to be relative
     # to the example page.
-    assert link['href'] == '../example_func.html#sphinx_astropy.tests.example_module.example.example_func'
+    assert parser.has_href(
+        '../example_func.html'
+        '#sphinx_astropy.tests.example_module.example.example_func')
+
+    # The ref-link example has an example of a link made with the ref role.
+    path = app.outdir / 'examples/ref-link.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceInternalHtmlParser()
+    parser.feed(html)
+    assert parser.has_href('../example-marker.html#example-link-target')
