@@ -472,3 +472,13 @@ def test_links(app, status, warning):
     parser = ReferenceInternalHtmlParser()
     parser.feed(html)
     assert parser.has_href('../ref-targets.html#section-target')
+
+    # The named-equation example has an example of a an equation with a
+    # label, and a reference to that label.
+    # This shows that the link points back to the original equation.
+    path = app.outdir / 'examples/named-equation.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceInternalHtmlParser()
+    parser.feed(html)
+    assert parser.has_href('../ref-targets.html#equation-euler')
