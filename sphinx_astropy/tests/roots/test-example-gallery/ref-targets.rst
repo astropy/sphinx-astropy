@@ -19,3 +19,11 @@ The standalone versions of these examples need to be stripped of these reference
    Link to the header: :ref:`section-target`.
 
 A ``ref`` link: :ref:`section-target` outside the example.
+
+.. example:: Named equation
+   :tags: reference target
+
+   .. math:: e^{i\pi} + 1 = 0
+      :label: euler
+
+   The Euler equation :math:numref:`euler`.
