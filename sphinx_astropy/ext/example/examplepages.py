@@ -5,6 +5,7 @@
 __all__ = ('ExamplePage', 'ExampleContentDirective')
 
 import os
+import posixpath
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
@@ -180,8 +181,21 @@ class ExampleContentDirective(Directive):
         # rather than the source page.
         for node in example['content_node'].traverse():
             if isinstance(node, pending_xref):
+                # The docname of the page where the example originated.
+                origin_docname = node['refdoc']
                 # Switch the refdoc to be the current doc. This will ensure
                 # the link resolves correctly from the standalone example page.
                 node['refdoc'] = self.env.docname
+                if node['refdomain'] == 'std' and node['reftype'] == 'doc':
+                    if not node['reftarget'].startswith('/'):
+                        # Replace the relative reftarget with the absolute
+                        # reftarget so it will resolve from the standalone
+                        # example page
+                        abs_reftarget = '/' + posixpath.normpath(
+                            posixpath.join(
+                                origin_docname,
+                                posixpath.relpath(node['reftarget'],
+                                                  start=origin_docname)))
+                        node['reftarget'] = abs_reftarget
 
         return [example['content_node']]

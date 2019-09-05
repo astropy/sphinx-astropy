@@ -354,6 +354,7 @@ def test_index_pages(app, status, warning):
         '.. toctree::\n'
         '   :hidden:\n'
         '\n'
+        '   doc-link\n'
         '   example-with-multiple-tags\n'
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
@@ -365,6 +366,8 @@ def test_index_pages(app, status, warning):
         '\n'
         '.. Listing for styling (eventually will become a tiled grid)\n'
         '\n'
+        '- :doc:`Doc link <doc-link>`\n'
+        '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Example with multiple tags <example-with-multiple-tags>`\n'
         '  (:doc:`tag-a </examples/tags/tag-a>`,\n'
         '  :doc:`tag-b </examples/tags/tag-b>`)\n'
@@ -462,6 +465,13 @@ def test_links(app, status, warning):
     parser = ReferenceInternalHtmlParser()
     parser.feed(html)
     assert parser.has_href('../example-marker.html#example-link-target')
+
+    # The doc-link example has a doc role for making a link to another page.
+    path = app.outdir / 'examples/doc-link.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser.feed(html)
+    assert parser.has_href('../example-marker.html')
 
     # The header-reference-target-example example has an example of a ref
     # link to a target on a header that's also part of the example content.

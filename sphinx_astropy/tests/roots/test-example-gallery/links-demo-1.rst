@@ -14,3 +14,8 @@ This page demonstrates that links (internal and external) can be resolved in sta
    :tags: links
 
    A ref link to a header: :ref:`example-link-target`.
+
+.. example:: Doc link
+   :tags: links
+
+   A doc link to a page: :doc:`example-marker`.
