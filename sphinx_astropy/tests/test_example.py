@@ -360,6 +360,7 @@ def test_index_pages(app, status, warning):
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
         '   header-reference-target-example\n'
+        '   intersphinx-ref-link\n'
         '   named-equation\n'
         '   ref-link\n'
         '   tagged-example\n'
@@ -378,6 +379,8 @@ def test_index_pages(app, status, warning):
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
         '- :doc:`Header reference target example <header-reference-target-example>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
+        '- :doc:`Intersphinx ref link <intersphinx-ref-link>`\n'
+        '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Named equation <named-equation>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
         '- :doc:`Ref link <ref-link>`\n'
@@ -437,6 +440,38 @@ class ReferenceInternalHtmlParser(HTMLParser):
         return False
 
 
+class ReferenceExternalHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for Sphinx's external
+    reference link.
+
+    Internal reference links have a class ``reference external``. The `links`
+    attribute is a list of such links, which are represented as a dictionary
+    of their attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.links = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            try:
+                if 'reference external' in attrdict['class']:
+                    # matches
+                    self.links.append(attrdict)
+            except KeyError:
+                pass
+
+    def has_href(self, href):
+        """Test if a link with a particular href is in the parsed HTML.
+        """
+        for link in self.links:
+            if link['href'] == href:
+                return True
+        return False
+
+
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_links(app, status, warning):
     """Test link resolution on standalone example pages.
@@ -472,6 +507,15 @@ def test_links(app, status, warning):
         html = fh.read()
     parser.feed(html)
     assert parser.has_href('../example-marker.html')
+
+    # The intersphinx-ref-link example has a ref role to the Astropy
+    # docs with intersphinx
+    path = app.outdir / 'examples/intersphinx-ref-link.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceExternalHtmlParser()
+    parser.feed(html)
+    assert parser.has_href('https://docs.astropy.org/en/stable/wcs/index.html#astropy-wcs')
 
     # The header-reference-target-example example has an example of a ref
     # link to a target on a header that's also part of the example content.

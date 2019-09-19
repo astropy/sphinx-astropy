@@ -8,3 +8,6 @@ extensions = [
 exclude_patterns = ['_build']
 suppress_warnings = ['app.add_directive', 'app.add_node']
 default_role = 'obj'
+intersphinx_mapping = {
+    'astropy': ('https://docs.astropy.org/en/stable/', None),
+}

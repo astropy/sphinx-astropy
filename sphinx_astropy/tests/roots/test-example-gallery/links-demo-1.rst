@@ -19,3 +19,8 @@ This page demonstrates that links (internal and external) can be resolved in sta
    :tags: links
 
    A doc link to a page: :doc:`example-marker`.
+
+.. example:: Intersphinx ref link
+   :tags: links
+
+   An intersphinx link to a section in the Astropy documentation: :ref:`astropy.wcs <astropy:astropy-wcs>`.
