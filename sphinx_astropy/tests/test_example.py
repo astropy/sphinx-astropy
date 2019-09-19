@@ -354,18 +354,20 @@ def test_index_pages(app, status, warning):
         '.. toctree::\n'
         '   :hidden:\n'
         '\n'
+        '   api-link\n'
         '   doc-link\n'
         '   example-with-multiple-tags\n'
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
         '   header-reference-target-example\n'
-        '   intersphinx-link\n'
         '   named-equation\n'
         '   ref-link\n'
         '   tagged-example\n'
         '\n'
         '.. Listing for styling (eventually will become a tiled grid)\n'
         '\n'
+        '- :doc:`API link <api-link>`\n'
+        '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Doc link <doc-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Example with multiple tags <example-with-multiple-tags>`\n'
@@ -376,8 +378,6 @@ def test_index_pages(app, status, warning):
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
         '- :doc:`Header reference target example <header-reference-target-example>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
-        '- :doc:`Intersphinx link <intersphinx-link>`\n'
-        '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Named equation <named-equation>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
         '- :doc:`Ref link <ref-link>`\n'
@@ -446,13 +446,13 @@ def test_links(app, status, warning):
     app.builder.build_all()
     print(app.outdir)
 
-    # The intersphinx-link example has an example of an intersphinx link.
-    path = app.outdir / 'examples/intersphinx-link.html'
+    # The api-link example has an example of an internal Python API link.
+    path = app.outdir / 'examples/api-link.html'
     with open(path) as fh:
         html = fh.read()
     parser = ReferenceInternalHtmlParser()
     parser.feed(html)
-    # Make sure the intersphinx link's href got adjusted to be relative
+    # Make sure the APIs link's href got adjusted to be relative
     # to the example page.
     assert parser.has_href(
         '../example_func.html'
