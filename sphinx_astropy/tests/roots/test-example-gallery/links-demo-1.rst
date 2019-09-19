@@ -24,3 +24,8 @@ This page demonstrates that links (internal and external) can be resolved in sta
    :tags: links
 
    An intersphinx link to a section in the Astropy documentation: :ref:`astropy.wcs <astropy:astropy-wcs>`.
+
+.. example:: Intersphinx API link
+   :tags: links
+
+   An intersphinx link to an API in the Astropy documentation: `astropy.table.Table`.

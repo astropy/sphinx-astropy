@@ -360,6 +360,7 @@ def test_index_pages(app, status, warning):
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
         '   header-reference-target-example\n'
+        '   intersphinx-api-link\n'
         '   intersphinx-ref-link\n'
         '   named-equation\n'
         '   ref-link\n'
@@ -379,6 +380,8 @@ def test_index_pages(app, status, warning):
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
         '- :doc:`Header reference target example <header-reference-target-example>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
+        '- :doc:`Intersphinx API link <intersphinx-api-link>`\n'
+        '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Intersphinx ref link <intersphinx-ref-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Named equation <named-equation>`\n'
@@ -516,6 +519,15 @@ def test_links(app, status, warning):
     parser = ReferenceExternalHtmlParser()
     parser.feed(html)
     assert parser.has_href('https://docs.astropy.org/en/stable/wcs/index.html#astropy-wcs')
+
+    # The intersphinx-api-link example has a ref role to the Astropy
+    # docs with intersphinx
+    path = app.outdir / 'examples/intersphinx-api-link.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceExternalHtmlParser()
+    parser.feed(html)
+    assert parser.has_href('https://docs.astropy.org/en/stable/api/astropy.table.Table.html#astropy.table.Table')
 
     # The header-reference-target-example example has an example of a ref
     # link to a target on a header that's also part of the example content.
