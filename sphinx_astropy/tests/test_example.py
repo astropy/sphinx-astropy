@@ -370,6 +370,8 @@ def test_index_pages(app, status, warning):
         '\n'
         '   api-link\n'
         '   doc-link\n'
+        '   example-with-a-figure\n'
+        '   example-with-an-external-figure\n'
         '   example-with-an-external-image\n'
         '   example-with-an-image\n'
         '   example-with-multiple-tags\n'
@@ -388,6 +390,10 @@ def test_index_pages(app, status, warning):
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Doc link <doc-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Example with a figure <example-with-a-figure>`\n'
+        '  (:doc:`images </examples/tags/images>`)\n'
+        '- :doc:`Example with an external figure <example-with-an-external-figure>`\n'
+        '  (:doc:`images </examples/tags/images>`)\n'
         '- :doc:`Example with an external image <example-with-an-external-image>`\n'
         '  (:doc:`images </examples/tags/images>`)\n'
         '- :doc:`Example with an image <example-with-an-image>`\n'
@@ -614,6 +620,28 @@ def test_images(app, status, warning):
 
     # A regular image directive with an external URI
     path = app.outdir / 'examples/example-with-an-external-image.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ImgHtmlParser()
+    parser.feed(html)
+    # Make sure the APIs link's href got adjusted to be relative
+    # to the example page.
+    assert parser.has_img_src(
+        'https://www.astropy.org/images/astropy_project_logo.svg')
+
+    # A figure directive with a relative URI to a local image.
+    path = app.outdir / 'examples/example-with-a-figure.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ImgHtmlParser()
+    parser.feed(html)
+    # Make sure the APIs link's href got adjusted to be relative
+    # to the example page.
+    assert parser.has_img_src(
+        '../_images/astropy_project_logo.svg')
+
+    # A figure directive with an external image URI.
+    path = app.outdir / 'examples/example-with-an-external-figure.html'
     with open(path) as fh:
         html = fh.read()
     parser = ImgHtmlParser()
