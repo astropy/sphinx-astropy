@@ -23,6 +23,7 @@ from sphinx_astropy.ext.example.preprocessor import (
     detect_examples, preprocess_examples)
 from sphinx_astropy.ext.example.examplepages import ExamplePage
 from sphinx_astropy.ext.example.templates import Renderer
+from sphinx_astropy.ext.example.utils import is_directive_registered
 
 
 @pytest.mark.parametrize(
@@ -182,6 +183,10 @@ def test_app_setup(app, status, warning):
 
     # Check registered configs
     assert 'astropy_examples_dir' in app.config
+
+    # Check registered directives
+    assert is_directive_registered('example')
+    assert is_directive_registered('example-content')
 
 
 def test_parallel_reads(tmpdir, rootdir):
