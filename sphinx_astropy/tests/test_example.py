@@ -278,6 +278,9 @@ def test_example_page(app, status, warning):
 
     rendered_page = example_page.render(renderer)
     expected = (
+        '\n'
+        '.. doctest-skip-all\n'
+        '\n'
         'Example with two paragraphs\n'
         '###########################\n'
         '\n'
@@ -313,6 +316,9 @@ def test_example_page_rendering(app, status, warning):
     with open(example_page_path) as fh:
         rendered_page = fh.read()
     expected = (
+        '\n'
+        '.. doctest-skip-all\n'
+        '\n'
         'Tagged example\n'
         '##############\n'
         '\n'
@@ -329,6 +335,9 @@ def test_example_page_rendering(app, status, warning):
     with open(example_page_path) as fh:
         rendered_page = fh.read()
     expected = (
+        '\n'
+        '.. doctest-skip-all\n'
+        '\n'
         'Example with multiple tags\n'
         '##########################\n'
         '\n'

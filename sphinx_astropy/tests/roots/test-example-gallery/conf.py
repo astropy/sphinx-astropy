@@ -3,6 +3,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'numpydoc',
+    'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.example'
 ]
 exclude_patterns = ['_build']

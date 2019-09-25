@@ -12,6 +12,8 @@ from docutils.parsers.rst import Directive
 from sphinx.util.logging import getLogger
 from sphinx.addnodes import pending_xref
 
+from .utils import is_directive_registered
+
 
 class ExamplePage:
     """A class that renders and represents a standalone example page.
@@ -132,7 +134,8 @@ class ExamplePage:
         context = {
             'title': self.source.title,
             'tag_pages': self.tag_pages,
-            'example': self.source
+            'example': self.source,
+            'has_doctestskipall': is_directive_registered('doctest-skip-all')
         }
         return renderer.render('astropy_example/examplepage.rst', context)
 

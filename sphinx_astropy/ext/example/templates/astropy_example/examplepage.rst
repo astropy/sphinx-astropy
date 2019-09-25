@@ -1,3 +1,7 @@
+{%- if has_doctestskipall %}
+.. doctest-skip-all
+{%- endif %}
+
 {{ title | escape | h1underline}}
 
 From :doc:`{{ example.docname }}`.
