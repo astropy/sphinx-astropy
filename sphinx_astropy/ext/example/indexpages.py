@@ -20,14 +20,15 @@ class LandingPage:
         Object describing a standalone example page.
     examples_dir : str
         The directory path where example pages are written.
-    srcdir : str
-        The root directory path of the Sphinx project's source.
+    app : sphinx.application.Sphinx
+        The Sphinx application instance.
     """
 
-    def __init__(self, example_pages, examples_dir, srcdir):
+    def __init__(self, example_pages, examples_dir, app):
         self._example_pages = example_pages
         self._examples_dir = examples_dir
-        self._srcdir = srcdir
+        self._app = app
+        self._srcdir = app.srcdir
 
     @property
     def rel_docname(self):
@@ -95,14 +96,15 @@ class TagPage:
         Object describing a standalone example page.
     examples_dir : str
         The directory path where example pages are written.
-    srcdir : str
-        The root directory path of the Sphinx project's source.
+    app : sphinx.application.Sphinx
+        The Sphinx application instance.
     """
 
-    def __init__(self, tag_name, example_pages, examples_dir, srcdir):
+    def __init__(self, tag_name, example_pages, examples_dir, app):
         self.name = tag_name
         self._examples_dir = examples_dir
-        self._srcdir = srcdir
+        self._app = app
+        self._srcdir = app.srcdir
 
         # Process example pages to get all examples with this tag;
         # also insert a reference to this tag page into that example page

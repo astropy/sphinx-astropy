@@ -264,7 +264,7 @@ def test_example_page(app, status, warning):
     example = examples[0]
 
     examples_dir = os.path.join(app.srcdir, app.config.astropy_examples_dir)
-    example_page = ExamplePage(example, examples_dir, app.srcdir)
+    example_page = ExamplePage(example, examples_dir, app)
 
     assert example_page.source == example
     assert example_page.rel_docname == 'example-with-two-paragraphs'

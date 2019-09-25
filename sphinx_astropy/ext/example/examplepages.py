@@ -22,14 +22,15 @@ class ExamplePage:
         Object describing the source of the example.
     examples_dir : str
         The directory path where example pages are written.
-    srcdir : str
-        The root directory path of the Sphinx project's source.
+    app : sphinx.application.Sphinx
+        The Sphinx application instance.
     """
 
-    def __init__(self, example_source, examples_dir, srcdir):
+    def __init__(self, example_source, examples_dir, app):
         self._example_source = example_source
         self._examples_dir = examples_dir
-        self._srcdir = srcdir
+        self._app = app
+        self._srcdir = app.srcdir
         self._tag_pages = []
 
     @property
