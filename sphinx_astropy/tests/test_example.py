@@ -370,6 +370,8 @@ def test_index_pages(app, status, warning):
         '\n'
         '   api-link\n'
         '   doc-link\n'
+        '   example-with-an-external-image\n'
+        '   example-with-an-image\n'
         '   example-with-multiple-tags\n'
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
@@ -386,6 +388,10 @@ def test_index_pages(app, status, warning):
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Doc link <doc-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Example with an external image <example-with-an-external-image>`\n'
+        '  (:doc:`images </examples/tags/images>`)\n'
+        '- :doc:`Example with an image <example-with-an-image>`\n'
+        '  (:doc:`images </examples/tags/images>`)\n'
         '- :doc:`Example with multiple tags <example-with-multiple-tags>`\n'
         '  (:doc:`tag-a </examples/tags/tag-a>`,\n'
         '  :doc:`tag-b </examples/tags/tag-b>`)\n'
@@ -562,3 +568,57 @@ def test_links(app, status, warning):
     parser = ReferenceInternalHtmlParser()
     parser.feed(html)
     assert parser.has_href('../ref-targets.html#equation-euler')
+
+
+class ImgHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for ``img`` tags.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.imgs = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            self.imgs.append(attrdict)
+
+    def has_img_src(self, uri):
+        """Test if an image is present based on its URI.
+        """
+        for img in self.imgs:
+            if img['src'] == uri:
+                return True
+        return False
+
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_images(app, status, warning):
+    """Test resolution of image-like items in examples.
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+    print(app.outdir)
+
+    # A regular image directive with a relative URI to a local image.
+    path = app.outdir / 'examples/example-with-an-image.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ImgHtmlParser()
+    parser.feed(html)
+    # Make sure the APIs link's href got adjusted to be relative
+    # to the example page.
+    assert parser.has_img_src(
+        '../_images/astropy_project_logo.svg')
+
+    # A regular image directive with an external URI
+    path = app.outdir / 'examples/example-with-an-external-image.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ImgHtmlParser()
+    parser.feed(html)
+    # Make sure the APIs link's href got adjusted to be relative
+    # to the example page.
+    assert parser.has_img_src(
+        'https://www.astropy.org/images/astropy_project_logo.svg')

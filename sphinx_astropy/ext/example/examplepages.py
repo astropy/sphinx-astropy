@@ -6,6 +6,7 @@ __all__ = ('ExamplePage', 'ExampleContentDirective')
 
 import os
 import posixpath
+import re
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
@@ -13,6 +14,11 @@ from sphinx.util.logging import getLogger
 from sphinx.addnodes import pending_xref
 
 from .utils import is_directive_registered
+
+
+HTTP_URI = re.compile(r'^http(s?)://')
+"""Regular expression for identifying http or https URIs.
+"""
 
 
 class ExamplePage:
@@ -174,32 +180,64 @@ class ExampleContentDirective(Directive):
         self.env = self.state.document.settings.env
         self.example_id = self.arguments[0].strip()
         try:
-            example = self.env.sphinx_astropy_examples[self.example_id]
+            self.example = self.env.sphinx_astropy_examples[self.example_id]
         except (KeyError, AttributeError):
             message = 'Example {} not found in the environment'.format(
                 self.example_id)
             self._logger.warning(message)
             return [nodes.Text(message, message)]
 
-        # Adapt internal links to work from the standalone example page
-        # rather than the source page.
-        for node in example['content_node'].traverse():
+        # Adapt nodes to work from the standalone example page rather than the
+        # source page.
+        for node in self.example['content_node'].traverse():
             if isinstance(node, pending_xref):
-                # The docname of the page where the example originated.
-                origin_docname = node['refdoc']
-                # Switch the refdoc to be the current doc. This will ensure
-                # the link resolves correctly from the standalone example page.
-                node['refdoc'] = self.env.docname
-                if node['refdomain'] == 'std' and node['reftype'] == 'doc':
-                    if not node['reftarget'].startswith('/'):
-                        # Replace the relative reftarget with the absolute
-                        # reftarget so it will resolve from the standalone
-                        # example page
-                        abs_reftarget = '/' + posixpath.normpath(
-                            posixpath.join(
-                                origin_docname,
-                                posixpath.relpath(node['reftarget'],
-                                                  start=origin_docname)))
-                        node['reftarget'] = abs_reftarget
+                self._process_pending_xref(node)
+            elif isinstance(node, nodes.image):
+                self._process_pending_image(node)
+        return [self.example['content_node']]
 
-        return [example['content_node']]
+    def _process_pending_xref(self, node):
+        """Adapt a ``pending_xref`` node to work from a standalone example
+        page.
+
+        Parameters
+        ----------
+        node : sphinx.addnodes.pending_xref
+            A ``pending_xref`` node type.
+        """
+        # The docname of the page where the example originated.
+        origin_docname = node['refdoc']
+        # Switch the refdoc to be the current doc. This will ensure
+        # the link resolves correctly from the standalone example page.
+        node['refdoc'] = self.env.docname
+        if node['refdomain'] == 'std' and node['reftype'] == 'doc':
+            if not node['reftarget'].startswith('/'):
+                # Replace the relative reftarget with the absolute
+                # reftarget so it will resolve from the standalone
+                # example page
+                abs_reftarget = '/' + posixpath.normpath(
+                    posixpath.join(
+                        origin_docname,
+                        posixpath.relpath(node['reftarget'],
+                                          start=origin_docname)))
+                node['reftarget'] = abs_reftarget
+
+    def _process_pending_image(self, node):
+        """Adapt an ``image`` node to work from a standalone example page.
+
+        Parameters
+        ----------
+        node : docutils.nodes.image
+            An ``image`` node type.
+        """
+        if not HTTP_URI.match(node['uri']):
+            if not node['uri'].startswith('/'):
+                # Replace the relative image URI with the absolute
+                # project-relative path so it will resolve from the
+                # standalone example page.
+                abs_uri = '/' + os.path.normpath(
+                    os.path.join(
+                        self.example['docname'],
+                        os.path.relpath(node['uri'],
+                                        start=self.example['docname'])))
+                node['uri'] = abs_uri
