@@ -194,6 +194,8 @@ class ExampleContentDirective(Directive):
                 self._process_pending_xref(node)
             elif isinstance(node, nodes.image):
                 self._process_pending_image(node)
+            elif isinstance(node, nodes.reference):
+                self._process_reference(node)
         return [self.example['content_node']]
 
     def _process_pending_xref(self, node):
@@ -241,3 +243,32 @@ class ExampleContentDirective(Directive):
                         os.path.relpath(node['uri'],
                                         start=self.example['docname'])))
                 node['uri'] = abs_uri
+
+    def _process_reference(self, node):
+        """Adapt a ``reference`` to work from a standalone example page.
+
+        Parameters
+        ----------
+        node : docutils.nodes.reference
+            A ``reference`` node type.
+
+        Notes
+        -----
+        In most cases, external references don't need to be adapted. However,
+        matplotlib.sphinxext.plot_directive is observed to use an external
+        reference node when linking to the plot source files. Those URIs
+        start with './/'.
+        """
+        if 'refuri' in node:  # look for "external" links
+            if not HTTP_URI.match(node['refuri']):
+                # The refuri is actually a local path. We need to make the
+                # link relative to the directory of the examples.
+                uri = posixpath.relpath(
+                    posixpath.normpath(
+                        posixpath.join(
+                            self.example['docname'],
+                            posixpath.relpath(
+                                node['refuri'],
+                                start=self.example['docname']))),
+                    start=posixpath.dirname(self.env.docname))
+                node['refuri'] = uri

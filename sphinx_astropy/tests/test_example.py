@@ -380,6 +380,7 @@ def test_index_pages(app, status, warning):
         '   header-reference-target-example\n'
         '   intersphinx-api-link\n'
         '   intersphinx-ref-link\n'
+        '   matplotlib-plot\n'
         '   named-equation\n'
         '   ref-link\n'
         '   tagged-example\n'
@@ -410,6 +411,8 @@ def test_index_pages(app, status, warning):
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Intersphinx ref link <intersphinx-ref-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Matplotlib plot <matplotlib-plot>`\n'
+        '  (:doc:`images </examples/tags/images>`)\n'
         '- :doc:`Named equation <named-equation>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
         '- :doc:`Ref link <ref-link>`\n'
@@ -650,3 +653,18 @@ def test_images(app, status, warning):
     # to the example page.
     assert parser.has_img_src(
         'https://www.astropy.org/images/astropy_project_logo.svg')
+
+    # A matplotlib-based plot directive
+    path = app.outdir / 'examples/matplotlib-plot.html'
+    with open(path) as fh:
+        html = fh.read()
+    img_parser = ImgHtmlParser()
+    img_parser.feed(html)
+    assert img_parser.has_img_src(
+        '../_images/images-1.png')
+    a_parser = ReferenceExternalHtmlParser()
+    a_parser.feed(html)
+    assert a_parser.has_href('../images-1.py')
+    assert a_parser.has_href('../images-1.png')
+    assert a_parser.has_href('../images-1.hires.png')
+    assert a_parser.has_href('../images-1.pdf')

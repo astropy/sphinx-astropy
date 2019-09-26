@@ -1,8 +1,11 @@
+import matplotlib.sphinxext.plot_directive
+
 master_doc = 'index'  # for Sphinx <2.0
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'numpydoc',
+    matplotlib.sphinxext.plot_directive.__name__,
     'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.example'
 ]
