@@ -9,7 +9,7 @@ extensions = [
     'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.example'
 ]
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', '_includes']
 suppress_warnings = ['app.add_directive', 'app.add_node']
 default_role = 'obj'
 intersphinx_mapping = {

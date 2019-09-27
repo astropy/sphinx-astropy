@@ -370,6 +370,7 @@ def test_index_pages(app, status, warning):
         '\n'
         '   api-link\n'
         '   doc-link\n'
+        '   example-using-the-include-directive\n'
         '   example-with-a-figure\n'
         '   example-with-an-external-figure\n'
         '   example-with-an-external-image\n'
@@ -391,6 +392,8 @@ def test_index_pages(app, status, warning):
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Doc link <doc-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Example using the include directive <example-using-the-include-directive>`\n'
+        '  (:doc:`includes </examples/tags/includes>`)\n'
         '- :doc:`Example with a figure <example-with-a-figure>`\n'
         '  (:doc:`images </examples/tags/images>`)\n'
         '- :doc:`Example with an external figure <example-with-an-external-figure>`\n'
@@ -668,3 +671,51 @@ def test_images(app, status, warning):
     assert a_parser.has_href('../images-1.png')
     assert a_parser.has_href('../images-1.hires.png')
     assert a_parser.has_href('../images-1.pdf')
+
+
+class ParagraphHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for ``p`` tags.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.paragraphs = []
+        self.open_tag = False
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'p':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            self.paragraphs.append({'tag': attrdict, 'content': None})
+            self.open_tag = True
+
+    def handle_data(self, data):
+        if self.open_tag:
+            self.paragraphs[-1]['content'] = data
+            self.open_tag = False
+
+    def has_p_starting_with(self, content):
+        """Test if a paragraph exists that begins with the given content.
+        """
+        for p in self.paragraphs:
+            if p['content'].startswith(content):
+                return True
+        return False
+
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_includes(app, status, warning):
+    """Test resolution of includes-based items in examples.
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+    print(app.outdir)
+
+    # A regular image directive with a relative URI to a local image.
+    path = app.outdir / 'examples/example-using-the-include-directive.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ParagraphHtmlParser()
+    parser.feed(html)
+    assert parser.has_p_starting_with(
+        'This is sample content from a file')
