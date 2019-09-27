@@ -381,6 +381,7 @@ def test_index_pages(app, status, warning):
         '   header-reference-target-example\n'
         '   intersphinx-api-link\n'
         '   intersphinx-ref-link\n'
+        '   literalinclude-example\n'
         '   matplotlib-plot\n'
         '   named-equation\n'
         '   ref-link\n'
@@ -414,6 +415,8 @@ def test_index_pages(app, status, warning):
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Intersphinx ref link <intersphinx-ref-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Literalinclude example <literalinclude-example>`\n'
+        '  (:doc:`includes </examples/tags/includes>`)\n'
         '- :doc:`Matplotlib plot <matplotlib-plot>`\n'
         '  (:doc:`images </examples/tags/images>`)\n'
         '- :doc:`Named equation <named-equation>`\n'
@@ -702,6 +705,19 @@ class ParagraphHtmlParser(HTMLParser):
         return False
 
 
+class PreTagHtmlParser(HTMLParser):
+    """HTML Parser that counts ``pre`` tags.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.pre_count = 0
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'pre':
+            self.pre_count += 1
+
+
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_includes(app, status, warning):
     """Test resolution of includes-based items in examples.
@@ -719,3 +735,11 @@ def test_includes(app, status, warning):
     parser.feed(html)
     assert parser.has_p_starting_with(
         'This is sample content from a file')
+
+    # A regular image directive with a relative URI to a local image.
+    path = app.outdir / 'examples/literalinclude-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = PreTagHtmlParser()
+    parser.feed(html)
+    assert parser.pre_count == 1
