@@ -11,7 +11,7 @@ import re
 from docutils import nodes
 from docutils.parsers.rst import Directive
 from sphinx.util.logging import getLogger
-from sphinx.addnodes import pending_xref
+from sphinx.addnodes import pending_xref, download_reference
 
 from .utils import is_directive_registered
 
@@ -194,6 +194,8 @@ class ExampleContentDirective(Directive):
                 self._process_pending_xref(node)
             elif isinstance(node, nodes.image):
                 self._process_pending_image(node)
+            elif isinstance(node, download_reference):
+                self._process_download_reference(node)
             elif isinstance(node, nodes.reference):
                 self._process_reference(node)
         return [self.example['content_node']]
@@ -243,6 +245,37 @@ class ExampleContentDirective(Directive):
                         os.path.relpath(node['uri'],
                                         start=self.example['docname'])))
                 node['uri'] = abs_uri
+
+    def _process_download_reference(self, node):
+        """Adapt a ``download_reference`` node, created by a ``download`` role,
+        to work from a standalone example page.
+
+        Parameters
+        ----------
+        node : sphinx.addnodes.download_reference
+            A ``download_reference`` node.
+        """
+        original_reftarget = node['reftarget']
+        if original_reftarget.startswith('/'):
+            # Ignore absolute references; they'll work out
+            return
+        if HTTP_URI.match(original_reftarget):
+            # Ignore external references
+            return
+
+        # The docname of the page where the example originated.
+        origin_docname = node['refdoc']
+        # Switch the refdoc to be the current doc. This will ensure
+        # the link resolves correctly from the standalone example page.
+        node['refdoc'] = self.env.docname
+
+        # Replace the relative reftarget with an absolute reftarget
+        abs_reftarget = '/' + posixpath.normpath(
+            posixpath.join(
+                origin_docname,
+                posixpath.relpath(node['reftarget'],
+                                  start=origin_docname)))
+        node['reftarget'] = abs_reftarget
 
     def _process_reference(self, node):
         """Adapt a ``reference`` to work from a standalone example page.

@@ -369,6 +369,7 @@ def test_index_pages(app, status, warning):
         '   :hidden:\n'
         '\n'
         '   api-link\n'
+        '   absolute-file-download-example\n'
         '   doc-link\n'
         '   example-using-the-include-directive\n'
         '   example-with-a-figure\n'
@@ -378,6 +379,8 @@ def test_index_pages(app, status, warning):
         '   example-with-multiple-tags\n'
         '   example-with-subsections\n'
         '   example-with-two-paragraphs\n'
+        '   external-file-download-example\n'
+        '   file-download-example\n'
         '   header-reference-target-example\n'
         '   intersphinx-api-link\n'
         '   intersphinx-ref-link\n'
@@ -391,6 +394,8 @@ def test_index_pages(app, status, warning):
         '\n'
         '- :doc:`API link <api-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
+        '- :doc:`Absolute file download example <absolute-file-download-example>`\n'
+        '  (:doc:`includes </examples/tags/includes>`)\n'
         '- :doc:`Doc link <doc-link>`\n'
         '  (:doc:`links </examples/tags/links>`)\n'
         '- :doc:`Example using the include directive <example-using-the-include-directive>`\n'
@@ -409,6 +414,10 @@ def test_index_pages(app, status, warning):
         '- :doc:`Example with subsections <example-with-subsections>`\n'
         '  (:doc:`tag-b </examples/tags/tag-b>`)\n'
         '- :doc:`Example with two paragraphs <example-with-two-paragraphs>`\n'
+        '- :doc:`External file download example <external-file-download-example>`\n'
+        '  (:doc:`includes </examples/tags/includes>`)\n'
+        '- :doc:`File download example <file-download-example>`\n'
+        '  (:doc:`includes </examples/tags/includes>`)\n'
         '- :doc:`Header reference target example <header-reference-target-example>`\n'
         '  (:doc:`reference target </examples/tags/reference-target>`)\n'
         '- :doc:`Intersphinx API link <intersphinx-api-link>`\n'
@@ -718,6 +727,44 @@ class PreTagHtmlParser(HTMLParser):
             self.pre_count += 1
 
 
+class ReferenceDownloadHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for Sphinx's ``reference download``
+    links.
+
+    Internal reference links have a class ``reference internal``. The `links`
+    attribute is a list of such links, which are represented as a dictionary
+    of their attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.links = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            try:
+                if 'reference download' in attrdict['class']:
+                    # matches
+                    self.links.append(attrdict)
+            except KeyError:
+                pass
+
+    def has_href(self, href):
+        """Test if a link with a particular href is in the parsed HTML.
+        """
+        for link in self.links:
+            if link['href'] == href:
+                return True
+        return False
+
+    def has_href_endswith(self, path):
+        for link in self.links:
+            if link['href'].endswith(path):
+                return True
+        return False
+
+
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_includes(app, status, warning):
     """Test resolution of includes-based items in examples.
@@ -743,3 +790,28 @@ def test_includes(app, status, warning):
     parser = PreTagHtmlParser()
     parser.feed(html)
     assert parser.pre_count == 1
+
+    # An internal download reference
+    path = app.outdir / 'examples/file-download-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceDownloadHtmlParser()
+    parser.feed(html)
+    assert parser.has_href_endswith('hello.py')
+
+    # An absolute internal download reference
+    path = app.outdir / 'examples/absolute-file-download-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceDownloadHtmlParser()
+    parser.feed(html)
+    assert parser.has_href_endswith('astropy_project_logo.svg')
+
+    # An external download reference
+    path = app.outdir / 'examples/external-file-download-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceDownloadHtmlParser()
+    parser.feed(html)
+    assert parser.has_href(
+        'https://raw.githubusercontent.com/astropy/astropy/master/README.rst')
