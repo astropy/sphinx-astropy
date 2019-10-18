@@ -15,4 +15,4 @@ default_role = 'obj'
 intersphinx_mapping = {
     'astropy': ('https://docs.astropy.org/en/stable/', None),
 }
-astropy_examples_enabled = True
+astropy_examples_enabled = False

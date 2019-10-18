@@ -51,6 +51,11 @@ def preprocess_examples(app):
         The application instance.
     """
     logger = getLogger(__name__)
+
+    if app.config.astropy_examples_enabled is False:
+        logger.debug('[sphinx_astropy] Skipping example gallery')
+        return
+
     logger.debug('[sphinx_astropy] preprocessing example gallery pages')
 
     # Create directory for example pages inside the documentation source dir

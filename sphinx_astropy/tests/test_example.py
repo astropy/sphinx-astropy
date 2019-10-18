@@ -183,6 +183,7 @@ def test_app_setup(app, status, warning):
 
     # Check registered configs
     assert 'astropy_examples_dir' in app.config
+    assert 'astropy_examples_enabled' in app.config
 
     # Check registered directives
     assert is_directive_registered('example')
@@ -224,6 +225,25 @@ def test_parallel_reads_duplicates(tmpdir, rootdir):
     finally:
         os.chdir(start_dir)
     assert status != 0
+
+
+def test_build_disabled_gallery(tmpdir, rootdir):
+    """Test that the examples extension works when galley generation is
+    disabled through the ``astropy_examples_enabled`` configuration.
+    """
+    case_dir = str(rootdir / 'test-example-gallery-disabled')
+    src_dir = os.path.join(tmpdir.strpath, 'docs')
+    shutil.copytree(case_dir, src_dir)
+
+    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
+
+    start_dir = os.path.abspath('.')
+    try:
+        os.chdir(src_dir)
+        status = build_main(argv=argv)
+    finally:
+        os.chdir(start_dir)
+    assert status == 0
 
 
 @pytest.mark.sphinx('dummy', testroot='example-gallery')

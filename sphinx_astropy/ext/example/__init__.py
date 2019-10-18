@@ -37,6 +37,9 @@ def setup(app):
     app.connect('env-merge-info', merge_examples)
     app.connect('env-before-read-docs', reorder_example_page_reading)
 
+    # Toggles the gallery generation on or off.
+    app.add_config_value('astropy_examples_enabled', False, 'env')
+
     # Configures the directory, relative to the documentation source root,
     # where example pages are created.
     app.add_config_value('astropy_examples_dir', 'examples', 'env')
