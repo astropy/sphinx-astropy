@@ -546,9 +546,16 @@ def test_links(app, status, warning):
     parser.feed(html)
     assert parser.has_href('../ref-targets.html#section-target')
 
-    # The named-equation example has an example of a an equation with a
-    # label, and a reference to that label.
-    # This shows that the link points back to the original equation.
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="Named equations do not work with Sphinx 1.7.")
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_named_equation(app, status, warning):
+    """The named-equation example has an example of a an equation with a
+    label, and a reference to that label.
+    This shows that the link points back to the original equation.
+    """
     path = app.outdir / 'examples/named-equation.html'
     with open(path) as fh:
         html = fh.read()
@@ -610,7 +617,14 @@ def test_images(app, status, warning):
     assert parser.has_img_src(
         'https://www.astropy.org/images/astropy_project_logo.svg')
 
-    # A matplotlib-based plot directive
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="The plot extension works unusually with Sphinx 1.7.")
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_matplotlib_plot(app, status, warning):
+    """A matplotlib-based plot directive.
+    """
     path = app.outdir / 'examples/matplotlib-plot.html'
     with open(path) as fh:
         html = fh.read()
