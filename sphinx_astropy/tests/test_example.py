@@ -16,6 +16,7 @@ from sphinx.util import logging
 from sphinx.errors import SphinxError
 from sphinx.cmd.build import build_main
 
+import sphinx
 from sphinx_astropy.ext.example import purge_examples, merge_examples
 from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id)
@@ -24,6 +25,8 @@ from sphinx_astropy.ext.example.preprocessor import (
 from sphinx_astropy.ext.example.examplepages import ExamplePage
 from sphinx_astropy.ext.example.templates import Renderer
 from sphinx_astropy.ext.example.utils import is_directive_registered
+
+sphinx_version = sphinx.version_info[:2]
 
 
 @pytest.mark.parametrize(
@@ -190,6 +193,10 @@ def test_app_setup(app, status, warning):
     assert is_directive_registered('example-content')
 
 
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="Example contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
 def test_parallel_reads(tmpdir, rootdir):
     """Test that the examples extension works in a parallelized build.
     """
@@ -660,6 +667,20 @@ def test_includes(app, status, warning):
     parser = ReferenceDownloadHtmlParser()
     parser.feed(html)
     assert parser.has_href_endswith('astropy_project_logo.svg')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="Example contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_external_downloads(app, status, warning):
+    """Test a download role pointing to external content.
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+    print(app.outdir)
 
     # An external download reference
     path = app.outdir / 'examples/external-file-download-example.html'
