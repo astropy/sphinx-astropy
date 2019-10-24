@@ -475,70 +475,6 @@ def test_index_pages(app, status, warning):
     assert contents == expected
 
 
-class ReferenceInternalHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for Sphinx's internal
-    reference link.
-
-    Internal reference links have a class ``reference internal``. The `links`
-    attribute is a list of such links, which are represented as a dictionary
-    of their attributes.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.links = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            try:
-                if 'reference internal' in attrdict['class']:
-                    # matches
-                    self.links.append(attrdict)
-            except KeyError:
-                pass
-
-    def has_href(self, href):
-        """Test if a link with a particular href is in the parsed HTML.
-        """
-        for link in self.links:
-            if link['href'] == href:
-                return True
-        return False
-
-
-class ReferenceExternalHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for Sphinx's external
-    reference link.
-
-    Internal reference links have a class ``reference external``. The `links`
-    attribute is a list of such links, which are represented as a dictionary
-    of their attributes.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.links = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            try:
-                if 'reference external' in attrdict['class']:
-                    # matches
-                    self.links.append(attrdict)
-            except KeyError:
-                pass
-
-    def has_href(self, href):
-        """Test if a link with a particular href is in the parsed HTML.
-        """
-        for link in self.links:
-            if link['href'] == href:
-                return True
-        return False
-
-
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_links(app, status, warning):
     """Test link resolution on standalone example pages.
@@ -614,28 +550,6 @@ def test_links(app, status, warning):
     assert parser.has_href('../ref-targets.html#equation-euler')
 
 
-class ImgHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for ``img`` tags.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.imgs = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'img':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            self.imgs.append(attrdict)
-
-    def has_img_src(self, uri):
-        """Test if an image is present based on its URI.
-        """
-        for img in self.imgs:
-            if img['src'] == uri:
-                return True
-        return False
-
-
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_images(app, status, warning):
     """Test resolution of image-like items in examples.
@@ -703,6 +617,144 @@ def test_images(app, status, warning):
     assert a_parser.has_href('../images-1.png')
     assert a_parser.has_href('../images-1.hires.png')
     assert a_parser.has_href('../images-1.pdf')
+
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_includes(app, status, warning):
+    """Test resolution of includes-based items in examples.
+    """
+    app.verbosity = 2
+    logging.setup(app, status, warning)
+    app.builder.build_all()
+    print(app.outdir)
+
+    # A regular image directive with a relative URI to a local image.
+    path = app.outdir / 'examples/example-using-the-include-directive.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ParagraphHtmlParser()
+    parser.feed(html)
+    assert parser.has_p_starting_with(
+        'This is sample content from a file')
+
+    # A regular image directive with a relative URI to a local image.
+    path = app.outdir / 'examples/literalinclude-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = PreTagHtmlParser()
+    parser.feed(html)
+    assert parser.pre_count == 1
+
+    # An internal download reference
+    path = app.outdir / 'examples/file-download-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceDownloadHtmlParser()
+    parser.feed(html)
+    assert parser.has_href_endswith('hello.py')
+
+    # An absolute internal download reference
+    path = app.outdir / 'examples/absolute-file-download-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceDownloadHtmlParser()
+    parser.feed(html)
+    assert parser.has_href_endswith('astropy_project_logo.svg')
+
+    # An external download reference
+    path = app.outdir / 'examples/external-file-download-example.html'
+    with open(path) as fh:
+        html = fh.read()
+    parser = ReferenceDownloadHtmlParser()
+    parser.feed(html)
+    assert parser.has_href(
+        'https://raw.githubusercontent.com/astropy/astropy/master/README.rst')
+
+
+class ReferenceExternalHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for Sphinx's external
+    reference link.
+
+    Internal reference links have a class ``reference external``. The `links`
+    attribute is a list of such links, which are represented as a dictionary
+    of their attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.links = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            try:
+                if 'reference external' in attrdict['class']:
+                    # matches
+                    self.links.append(attrdict)
+            except KeyError:
+                pass
+
+    def has_href(self, href):
+        """Test if a link with a particular href is in the parsed HTML.
+        """
+        for link in self.links:
+            if link['href'] == href:
+                return True
+        return False
+
+
+class ReferenceInternalHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for Sphinx's internal
+    reference link.
+
+    Internal reference links have a class ``reference internal``. The `links`
+    attribute is a list of such links, which are represented as a dictionary
+    of their attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.links = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            try:
+                if 'reference internal' in attrdict['class']:
+                    # matches
+                    self.links.append(attrdict)
+            except KeyError:
+                pass
+
+    def has_href(self, href):
+        """Test if a link with a particular href is in the parsed HTML.
+        """
+        for link in self.links:
+            if link['href'] == href:
+                return True
+        return False
+
+
+class ImgHtmlParser(HTMLParser):
+    """HTML Parser that specifically parses for ``img`` tags.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.imgs = []
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img':
+            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
+            self.imgs.append(attrdict)
+
+    def has_img_src(self, uri):
+        """Test if an image is present based on its URI.
+        """
+        for img in self.imgs:
+            if img['src'] == uri:
+                return True
+        return False
 
 
 class ParagraphHtmlParser(HTMLParser):
@@ -783,55 +835,3 @@ class ReferenceDownloadHtmlParser(HTMLParser):
             if link['href'].endswith(path):
                 return True
         return False
-
-
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_includes(app, status, warning):
-    """Test resolution of includes-based items in examples.
-    """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-    print(app.outdir)
-
-    # A regular image directive with a relative URI to a local image.
-    path = app.outdir / 'examples/example-using-the-include-directive.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ParagraphHtmlParser()
-    parser.feed(html)
-    assert parser.has_p_starting_with(
-        'This is sample content from a file')
-
-    # A regular image directive with a relative URI to a local image.
-    path = app.outdir / 'examples/literalinclude-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = PreTagHtmlParser()
-    parser.feed(html)
-    assert parser.pre_count == 1
-
-    # An internal download reference
-    path = app.outdir / 'examples/file-download-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceDownloadHtmlParser()
-    parser.feed(html)
-    assert parser.has_href_endswith('hello.py')
-
-    # An absolute internal download reference
-    path = app.outdir / 'examples/absolute-file-download-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceDownloadHtmlParser()
-    parser.feed(html)
-    assert parser.has_href_endswith('astropy_project_logo.svg')
-
-    # An external download reference
-    path = app.outdir / 'examples/external-file-download-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceDownloadHtmlParser()
-    parser.feed(html)
-    assert parser.has_href(
-        'https://raw.githubusercontent.com/astropy/astropy/master/README.rst')
