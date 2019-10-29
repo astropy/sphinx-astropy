@@ -6,6 +6,8 @@ text.
 __all__ = ('ExampleMarkerDirective', 'purge_examples', 'merge_examples',
            'format_title_to_example_id', 'format_title_to_source_ref_id')
 
+import itertools
+
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.errors import SphinxError
@@ -82,10 +84,24 @@ class ExampleMarkerDirective(Directive):
         # The container_node is just for nested parsing on the directive's
         # content. Only its children get added back into the node tree of
         # the original documentation page.
-        container_node = nodes.container(rawsource='\n'.join(self.content))
+        rawsource = '\n'.join(self.content)
+        container_node = nodes.container(rawsource=rawsource)
         # For docname/lineno metadata
         container_node.document = self.state.document
         nested_parse_with_titles(self.state, self.content, container_node)
+
+        # A copy of all substitution_definition nodes that are found within
+        # the directive, and above the example directive (these are mutually
+        # exclusive sets). These need to be copied over to the example
+        # page so that substitution references can get resolved there.
+        # (substitution_reference nodes are resolved by docutils just after
+        # this directive is run).
+        substitution_definitions = []
+        for n in itertools.chain(
+                container_node.traverse(nodes.substitution_definition),
+                self.state.document.traverse(nodes.substitution_definition)):
+            self._logger.debug('Copying substitution {}'.format(n))
+            substitution_definitions.append(n.deepcopy())
 
         # The target node is for backlinks from an example page to the
         # source of the example in the "main" docs.
@@ -100,6 +116,7 @@ class ExampleMarkerDirective(Directive):
             'tags': self.tags,
             'content': self.content,
             'content_node': container_node.deepcopy(),
+            'substitution_definitions': substitution_definitions,
             'ref_id': self.ref_id,
         }
 
