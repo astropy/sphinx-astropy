@@ -4,6 +4,7 @@
 
 __all__ = ('ExamplePage', 'ExampleContentDirective')
 
+import copy
 import os
 import posixpath
 import re
@@ -187,6 +188,14 @@ class ExampleContentDirective(Directive):
             self._logger.warning(message)
             return [nodes.Text(message, message)]
 
+        new_nodes = []
+
+        # Add substitution_definition nodes that aren't already in the
+        # example page.
+        new_nodes.extend(self._merge_substitution_definitions(
+            self.state.document,
+            self.example['substitution_definitions']))
+
         # Adapt nodes to work from the standalone example page rather than the
         # source page.
         for node in self.example['content_node'].traverse():
@@ -198,7 +207,44 @@ class ExampleContentDirective(Directive):
                 self._process_download_reference(node)
             elif isinstance(node, nodes.reference):
                 self._process_reference(node)
-        return [self.example['content_node']]
+        new_nodes.append(self.example['content_node'])
+
+        return new_nodes
+
+    def _merge_substitution_definitions(self, document, example_sub_defs):
+        """Get and process ``substitution_definition`` nodes that are
+        captured as part of the ExampleMarkerDirective directive.
+
+        The processing steps are:
+
+        1. Check if any substitutions of the same name are already in the
+           document. This could be because they are part of the rst_epilog
+           or rst_prolog present in all documents.
+        2. Note new substitution definitions in the document.
+        3. Return the list of new ``substitution_definition`` nodes.
+        """
+        # Names of substitution definitions that are part of the page already.
+        existing_sub_def_names = set()
+        for n in document.traverse(nodes.substitution_definition):
+            for name in n['names']:
+                existing_sub_def_names.add(name)
+
+        # Process substitution definitions from the example to find the
+        # ones that don't already exist in the document.
+        new_sub_defs = []
+        for n in example_sub_defs:
+            names = set(copy.deepcopy(n['names']))
+            if names.isdisjoint(existing_sub_def_names):
+                new_sub_defs.append(n)
+                # This is necessary because the substitution definitions
+                # are added *after* the document is parsed. The
+                # note_substitutions method adds important metadata about
+                # the substitutions to the document and the substitution_refs
+                # won't get resolved otherwise.
+                for name in names:
+                    document.note_substitution_def(n, name)
+
+        return new_sub_defs
 
     def _process_pending_xref(self, node):
         """Adapt a ``pending_xref`` node to work from a standalone example
