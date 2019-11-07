@@ -207,6 +207,10 @@ class ExampleContentDirective(Directive):
                 self._process_download_reference(node)
             elif isinstance(node, nodes.reference):
                 self._process_reference(node)
+            elif isinstance(node, nodes.footnote):
+                self._process_footnote(node, self.state.document)
+            elif isinstance(node, nodes.footnote_reference):
+                self._process_footnote_reference(node, self.state.document)
         new_nodes.append(self.example['content_node'])
 
         return new_nodes
@@ -351,3 +355,41 @@ class ExampleContentDirective(Directive):
                                 start=self.example['docname']))),
                     start=posixpath.dirname(self.env.docname))
                 node['refuri'] = uri
+
+    def _process_footnote(self, node, document):
+        """Process a ``footnote`` node that appears in the example content.
+
+        This calls the ``note_footnote`` or ``node_autofootnote`` methods
+        on the document (`docutils.nodes.document`). These methods are normally
+        called when the reStructuredText is parsed, but since these nodes
+        are preparsed from a different document, this directive needs to
+        manually "note" the footnotes so that the Footnotes transform
+        (`docutils.transforms.references.Footnotes`) can process it.
+        """
+        if node['backrefs']:
+            document.note_footnote(node)
+        else:
+            # The footnote is likely autonumbered.
+            if node['names']:
+                # The autofootnote transform need an empty names attribute
+                # here. It might be non-empty because the node came from
+                # the original page.
+                node['names'] = []
+            document.note_autofootnote(node)
+
+    def _process_footnote_reference(self, node, document):
+        """Process a ``footnote_reference`` node that appears in the example
+        content.
+
+        This calls the ``note_footnote_ref`` or ``note_autofootnote_ref``
+        methods on the document (`docutils.nodes.document`). These methods are
+        normally called when the reStructuredText is parsed, but since these
+        nodes are preparsed from a different document, this directive needs to
+        manually "note" the footnote references so that the Footnotes transform
+        (`docutils.transforms.references.Footnotes`) can process it.
+        """
+        if 'refid' not in node:
+            # The footnote_reference is likely autonumbered.
+            document.note_autofootnote_ref(node)
+        else:
+            document.note_footnote_ref(node)
