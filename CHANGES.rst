@@ -8,6 +8,8 @@ Changes in sphinx-astropy
   support for Sphinx older than 1.6 and the inherit docstring feature is
   only available in Sphinx 1.7 or greater. [#19, #24]
 
+- Make sure all extensions are marked as parallel-safe. [#26]
+
 1.1.1 (2019-02-21)
 ------------------
 
