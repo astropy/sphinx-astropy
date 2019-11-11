@@ -42,3 +42,6 @@ def setup(app):
         app.connect('config-inited', disable_intersphinx)
 
     app.add_config_value('disable_intersphinx', 0, True)
+
+    return {'parallel_read_safe': True,
+            'parallel_write_safe': True}

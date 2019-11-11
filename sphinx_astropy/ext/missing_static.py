@@ -35,4 +35,8 @@ def static_warning(app, config=None):
 
 
 def setup(app):
+
     app.connect('build-finished', static_warning)
+
+    return {'parallel_read_safe': True,
+            'parallel_write_safe': True}
