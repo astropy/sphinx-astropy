@@ -1,6 +1,11 @@
 Changes in sphinx-astropy
 =========================
 
+1.3 (unreleased)
+----------------
+
+- No changes yet.
+
 1.2 (2019-11-12)
 ----------------
 
