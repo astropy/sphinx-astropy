@@ -2,29 +2,15 @@
 
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-from setuptools import setup, find_packages
+import sys
+import setuptools
+from distutils.version import LooseVersion
+from setuptools import setup
 
-with open('README.rst') as infile:
-    long_description = infile.read()
+# Setuptools 30.3.0 or later is needed for setup.cfg options to be used
+if LooseVersion(setuptools.__version__) < LooseVersion('30.3.0'):
+    sys.stderr.write("ERROR: sphinx-automodapi requires setuptools 30.3.0 or "
+                     "later (found {0})".format(setuptools.__version__))
+    sys.exit(1)
 
-from sphinx_astropy import __version__
-
-setup(name='sphinx-astropy',
-      version=__version__,
-      description='Sphinx extensions and configuration specific to the Astropy project',
-      long_description=long_description,
-      author='The Astropy Developers',
-      author_email='astropy.team@gmail.com',
-      license='BSD',
-      url='https://www.astropy.org',
-      zip_safe=False,
-      install_requires=['sphinx>=1.7', 'astropy-sphinx-theme', 'numpydoc',
-                        'sphinx-automodapi', 'sphinx-gallery', 'pillow'],
-      packages=find_packages(),
-      package_data={'sphinx_astropy': ['local/*']},
-      classifiers=['Intended Audience :: Developers',
-                   'Programming Language :: Python',
-                   'Programming Language :: Python :: 2',
-                   'Programming Language :: Python :: 3',
-                   'Operating System :: OS Independent',
-                   'License :: OSI Approved :: BSD License'])
+setup()
