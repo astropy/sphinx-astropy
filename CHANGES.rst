@@ -1,7 +1,7 @@
 Changes in sphinx-astropy
 =========================
 
-1.2 (unreleased)
+1.2 (2019-11-12)
 ----------------
 
 - Updated minimum required version of Sphinx to 1.7 as Numpydoc dropped
