@@ -10,7 +10,9 @@ __all__ = ('setup',)
 
 from pkg_resources import get_distribution
 
-from .examplepages import ExampleContentDirective
+from .examplepages import (
+    ExampleContentDirective, ExampleContentNode, visit_example_content_html,
+    depart_example_content_html)
 from .marker import (
     ExampleMarkerDirective, purge_examples, merge_examples,
     ExampleMarkerNode, visit_example_marker_html, depart_example_marker_html)
@@ -35,6 +37,9 @@ def setup(app):
     app.add_node(
         ExampleMarkerNode,
         html=(visit_example_marker_html, depart_example_marker_html))
+    app.add_node(
+        ExampleContentNode,
+        html=(visit_example_content_html, depart_example_content_html))
     app.add_directive('example', ExampleMarkerDirective)
     app.add_directive('example-content', ExampleContentDirective)
     app.connect('builder-inited', preprocess_examples)

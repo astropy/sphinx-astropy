@@ -23,7 +23,8 @@ from sphinx_astropy.ext.example.marker import (
     ExampleMarkerNode)
 from sphinx_astropy.ext.example.preprocessor import (
     detect_examples, preprocess_examples)
-from sphinx_astropy.ext.example.examplepages import ExamplePage
+from sphinx_astropy.ext.example.examplepages import (
+    ExamplePage, ExampleContentNode)
 from sphinx_astropy.ext.example.templates import Renderer
 from sphinx_astropy.ext.example.utils import (
     is_directive_registered, is_node_registered)
@@ -196,6 +197,7 @@ def test_app_setup(app, status, warning):
 
     # Check registered nodes
     assert is_node_registered(ExampleMarkerNode)
+    assert is_node_registered(ExampleContentNode)
 
 
 @pytest.mark.skipif(
@@ -490,6 +492,8 @@ def test_index_pages(app, status, warning):
     assert contents == expected
 
 
+@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
+                         "rendered.")
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_links(app, status, warning):
     """Test link resolution on standalone example pages.
@@ -555,6 +559,8 @@ def test_links(app, status, warning):
     assert parser.has_href('../ref-targets.html#section-target')
 
 
+@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
+                         "rendered.")
 @pytest.mark.skipif(
     sphinx_version <= (1, 7),
     reason="Named equations do not work with Sphinx 1.7.")
@@ -572,6 +578,8 @@ def test_named_equation(app, status, warning):
     assert parser.has_href('../ref-targets.html#equation-euler')
 
 
+@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
+                         "rendered.")
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_images(app, status, warning):
     """Test resolution of image-like items in examples.
@@ -626,6 +634,8 @@ def test_images(app, status, warning):
         'https://www.astropy.org/images/astropy_project_logo.svg')
 
 
+@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
+                         "rendered.")
 @pytest.mark.skipif(
     sphinx_version <= (1, 7),
     reason="The plot extension works unusually with Sphinx 1.7.")
@@ -648,6 +658,8 @@ def test_matplotlib_plot(app, status, warning):
     assert a_parser.has_href('../images-1.pdf')
 
 
+@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
+                         "rendered.")
 @pytest.mark.sphinx('html', testroot='example-gallery')
 def test_includes(app, status, warning):
     """Test resolution of includes-based items in examples.
@@ -691,6 +703,8 @@ def test_includes(app, status, warning):
     assert parser.has_href_endswith('astropy_project_logo.svg')
 
 
+@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
+                         "rendered.")
 @pytest.mark.skipif(
     sphinx_version <= (1, 7),
     reason="Example contains download role with external URL "
