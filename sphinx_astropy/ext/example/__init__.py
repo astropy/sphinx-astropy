@@ -14,9 +14,9 @@ from .examplepages import (
     ExampleContentDirective, ExampleContentNode, visit_example_content_html,
     depart_example_content_html)
 from .marker import (
-    ExampleMarkerDirective, purge_examples, merge_examples,
-    ExampleMarkerNode, visit_example_marker_html, depart_example_marker_html)
-from .preprocessor import preprocess_examples, reorder_example_page_reading
+    ExampleMarkerDirective, ExampleMarkerNode, visit_example_marker_html,
+    depart_example_marker_html)
+from .preprocessor import preprocess_examples
 
 
 def setup(app):
@@ -43,9 +43,6 @@ def setup(app):
     app.add_directive('example', ExampleMarkerDirective)
     app.add_directive('example-content', ExampleContentDirective)
     app.connect('builder-inited', preprocess_examples)
-    app.connect('env-purge-doc', purge_examples)
-    app.connect('env-merge-info', merge_examples)
-    app.connect('env-before-read-docs', reorder_example_page_reading)
 
     # Toggles the gallery generation on or off.
     app.add_config_value('astropy_examples_enabled', False, 'env')
@@ -61,5 +58,5 @@ def setup(app):
             # env_version needs to be incremented when the persisted data
             # formats of the extension change.
             'env_version': 1,
-            'parallel_read_safe': False,
+            'parallel_read_safe': True,
             'parallel_write_safe': True}

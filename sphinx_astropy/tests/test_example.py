@@ -17,7 +17,6 @@ from sphinx.errors import SphinxError
 from sphinx.cmd.build import build_main
 
 import sphinx
-from sphinx_astropy.ext.example import purge_examples, merge_examples
 from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id,
     ExampleMarkerNode)
@@ -78,6 +77,8 @@ def test_example_directive_targets(app, status, warning):
         assert known_target_refid in target_refids
 
 
+@pytest.mark.skip(reason="Out-of-date since env.sphinx_astropy_examples is no "
+                         "longer set.")
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
 def test_example_env_persistence(app, status, warning):
     """Test that the examples are added to the app env.
@@ -134,6 +135,8 @@ def test_example_directive_duplicates(app, status, warning):
         app.builder.build(['examples', 'duplicate-examples'])
 
 
+@pytest.mark.skip(reason="Out-of-date since env.sphinx_astropy_examples is no "
+                         "longer set.")
 @pytest.mark.sphinx('xml', testroot='example-gallery')
 def test_example_directive_docstring(app, status, warning):
     """Test an example directive in the docsting of a function that's
@@ -156,35 +159,12 @@ def test_example_directive_docstring(app, status, warning):
 
 
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
-def test_purge_examples(app, status, warning):
-    """Test purging examples as part of a ``env-purge-doc`` event.
-
-    To mock up this event we run a build then manually purge an example
-    """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-
-    initial_docnames = set(
-        [ex['docname'] for ex in app.env.sphinx_astropy_examples.values()])
-    assert 'example-marker' in initial_docnames
-
-    purge_examples(app, app.env, 'example-marker')
-
-    after_docnames = set(
-        [ex['docname'] for ex in app.env.sphinx_astropy_examples.values()])
-    assert 'example-marker' not in after_docnames
-
-
-@pytest.mark.sphinx('dummy', testroot='example-gallery')
 def test_app_setup(app, status, warning):
     """Test that event callbacks, directives, and nodes got added to the
     Sphinx app.
     """
     # Check event callbacks
     listeners = app.events.listeners
-    assert purge_examples in listeners['env-purge-doc'].values()
-    assert merge_examples in listeners['env-merge-info'].values()
     assert preprocess_examples in listeners['builder-inited'].values()
 
     # Check registered configs
