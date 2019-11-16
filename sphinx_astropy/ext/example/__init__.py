@@ -11,7 +11,9 @@ __all__ = ('setup',)
 from pkg_resources import get_distribution
 
 from .examplepages import ExampleContentDirective
-from .marker import ExampleMarkerDirective, purge_examples, merge_examples
+from .marker import (
+    ExampleMarkerDirective, purge_examples, merge_examples,
+    ExampleMarkerNode, visit_example_marker_html, depart_example_marker_html)
 from .preprocessor import preprocess_examples, reorder_example_page_reading
 
 
@@ -30,6 +32,9 @@ def setup(app):
         http://www.sphinx-doc.org/en/master/extdev/index.html#extension-metadata
         for more information.
     """
+    app.add_node(
+        ExampleMarkerNode,
+        html=(visit_example_marker_html, depart_example_marker_html))
     app.add_directive('example', ExampleMarkerDirective)
     app.add_directive('example-content', ExampleContentDirective)
     app.connect('builder-inited', preprocess_examples)

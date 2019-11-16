@@ -3,8 +3,10 @@
 text.
 """
 
-__all__ = ('ExampleMarkerDirective', 'purge_examples', 'merge_examples',
-           'format_title_to_example_id', 'format_title_to_source_ref_id')
+__all__ = ('ExampleMarkerNode', 'visit_example_marker_html',
+           'depart_example_marker_html', 'ExampleMarkerDirective',
+           'purge_examples', 'merge_examples', 'format_title_to_example_id',
+           'format_title_to_source_ref_id')
 
 import itertools
 
@@ -13,6 +15,32 @@ from docutils.parsers.rst import Directive, directives
 from sphinx.errors import SphinxError
 from sphinx.util.logging import getLogger
 from sphinx.util.nodes import nested_parse_with_titles
+
+
+class ExampleMarkerNode(nodes.container):
+    """Docutils node that encapsulates an example in the source content.
+
+    This node is inserted by the `ExampleMarkerDirective`.
+    """
+
+
+def visit_example_marker_html(self, node):
+    """HTML visitor for the `ExampleMarkerNode`.
+
+    In HTML, marked up examples are wrapped in a ``<div>`` tag with a class
+    of ``astropy-example-source``.
+    """
+    # The class is used by the HTML postprocessor to capture the HTML of
+    # examples. The content of the div gets re-posted onto the stand-alone
+    # example pages.
+    self.body.append(
+        self.starttag(node, 'div', CLASS='astropy-example-source'))
+
+
+def depart_example_marker_html(self, node):
+    """HTML departure handler for the `ExampleMarkerNode`.
+    """
+    self.body.append('</div>')
 
 
 class ExampleMarkerDirective(Directive):
@@ -81,14 +109,15 @@ class ExampleMarkerDirective(Directive):
             '[sphinx_astropy] example title: %s, tags: %s',
             self.title, self.tags, location=(env.docname, self.lineno))
 
-        # The container_node is just for nested parsing on the directive's
-        # content. Only its children get added back into the node tree of
-        # the original documentation page.
+        # The example content is parsed into the ExampleMarkerNode. This
+        # node serves as both a container and a node that gets turned into a
+        # <div> that the HTML-postprocessor uses to identify and copy
+        # example content in the standalone example pages.
         rawsource = '\n'.join(self.content)
-        container_node = nodes.container(rawsource=rawsource)
+        example_node = ExampleMarkerNode(rawsource=rawsource)
         # For docname/lineno metadata
-        container_node.document = self.state.document
-        nested_parse_with_titles(self.state, self.content, container_node)
+        example_node.document = self.state.document
+        nested_parse_with_titles(self.state, self.content, example_node)
 
         # A copy of all substitution_definition nodes that are found within
         # the directive, and above the example directive (these are mutually
@@ -98,13 +127,14 @@ class ExampleMarkerDirective(Directive):
         # this directive is run).
         substitution_definitions = []
         for n in itertools.chain(
-                container_node.traverse(nodes.substitution_definition),
+                example_node.traverse(nodes.substitution_definition),
                 self.state.document.traverse(nodes.substitution_definition)):
             self._logger.debug('Copying substitution {}'.format(n))
             substitution_definitions.append(n.deepcopy())
 
         # The target node is for backlinks from an example page to the
         # source of the example in the "main" docs.
+        # In HTML, this becomes the id attribute of the container div.
         target_node = nodes.target('', '', ids=[self.ref_id])
         self.state.document.note_explicit_target(target_node)
 
@@ -115,15 +145,12 @@ class ExampleMarkerDirective(Directive):
             'title': self.title,
             'tags': self.tags,
             'content': self.content,
-            'content_node': container_node.deepcopy(),
+            'content_node': example_node.deepcopy(),
             'substitution_definitions': substitution_definitions,
             'ref_id': self.ref_id,
         }
 
-        output_nodes = [target_node]
-        output_nodes.extend(container_node.children)
-
-        return output_nodes
+        return [target_node, example_node]
 
 
 def format_title_to_example_id(title):

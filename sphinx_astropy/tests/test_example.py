@@ -19,12 +19,14 @@ from sphinx.cmd.build import build_main
 import sphinx
 from sphinx_astropy.ext.example import purge_examples, merge_examples
 from sphinx_astropy.ext.example.marker import (
-    format_title_to_example_id, format_title_to_source_ref_id)
+    format_title_to_example_id, format_title_to_source_ref_id,
+    ExampleMarkerNode)
 from sphinx_astropy.ext.example.preprocessor import (
     detect_examples, preprocess_examples)
 from sphinx_astropy.ext.example.examplepages import ExamplePage
 from sphinx_astropy.ext.example.templates import Renderer
-from sphinx_astropy.ext.example.utils import is_directive_registered
+from sphinx_astropy.ext.example.utils import (
+    is_directive_registered, is_node_registered)
 
 sphinx_version = sphinx.version_info[:2]
 
@@ -191,6 +193,9 @@ def test_app_setup(app, status, warning):
     # Check registered directives
     assert is_directive_registered('example')
     assert is_directive_registered('example-content')
+
+    # Check registered nodes
+    assert is_node_registered(ExampleMarkerNode)
 
 
 @pytest.mark.skipif(
