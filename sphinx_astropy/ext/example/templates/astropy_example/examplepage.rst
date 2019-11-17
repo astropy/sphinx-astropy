@@ -4,7 +4,7 @@
 
 {{ title | escape | h1underline}}
 
-From :doc:`{{ example.docname }}`.
+From :doc:`{{ example.abs_docname }}`.
 {%- if tag_pages %}
 Tagged:
 {%- for tag_page in tag_pages %}

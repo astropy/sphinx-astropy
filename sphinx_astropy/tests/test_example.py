@@ -268,7 +268,7 @@ def test_detect_examples(app, status, warning):
     assert examples[1].title == 'Tagged example'
     assert examples[1].tags == set(['tag-a'])
     assert repr(examples[1]) == ("ExampleSource('Tagged example', "
-                                 "'/example-marker', tags={'tag-a'})")
+                                 "'example-marker', tags={'tag-a'})")
 
     assert examples[2].title == 'Example with multiple tags'
     assert examples[2].tags == set(['tag-a', 'tag-b'])

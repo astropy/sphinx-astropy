@@ -106,8 +106,7 @@ def detect_examples(filepath, env):
     with open(filepath, encoding='utf-8') as fh:
         text = fh.read()
 
-    # Make the docname absolute
-    src_docname = '/' + env.path2doc(filepath)
+    src_docname = env.path2doc(filepath)
 
     for m in EXAMPLE_PATTERN.finditer(text):
         title = m.group('title')
@@ -133,8 +132,7 @@ class ExampleSource:
     title : str
         The title of an example.
     docname : str
-        The docname (project relative path of the source file, without
-        an extension) of the source file where the example came from.
+        The docname where the example originates from.
     tags : set of str
         The tags associated with the example.
 
@@ -157,6 +155,11 @@ class ExampleSource:
 
         self.docname = docname
         """Docname of the page where the example comes from.
+        """
+
+        self.abs_docname = '/' + docname
+        """Absolute docname of the origin page, suitable for using with a
+        ``doc`` referencing role.
         """
 
         self.example_id = format_title_to_example_id(self.title)
