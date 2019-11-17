@@ -6,7 +6,6 @@ import shutil
 from xml.etree.ElementTree import tostring
 
 import pytest
-from docutils import nodes
 
 # Sphinx pytest fixtures only available in Sphinx 1.7+
 pytest.importorskip("sphinx", minversion="1.7")  # noqa E402
@@ -77,11 +76,10 @@ def test_example_directive_targets(app, status, warning):
         assert known_target_refid in target_refids
 
 
-@pytest.mark.skip(reason="Out-of-date since env.sphinx_astropy_examples is no "
-                         "longer set.")
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
 def test_example_env_persistence(app, status, warning):
-    """Test that the examples are added to the app env.
+    """Test that the examples are added to the app env by
+    `sphinx_astropy.ext.example.preprocessor.cache_examples`.
     """
     app.verbosity = 2
     logging.setup(app, status, warning)
@@ -110,21 +108,20 @@ def test_example_env_persistence(app, status, warning):
     # Test title
     assert ex['title'] == 'Example with two paragraphs'
 
-    # Test docname
-    assert ex['docname'] == 'example-marker'
+    # Test docnames
+    assert ex['source_docname'] == 'example-marker'
+    assert ex['docname'] == 'examples/example-with-two-paragraphs'
 
-    # Test ref_id
-    assert ex['ref_id'] == 'example-src-example-with-two-paragraphs'
-
-    # Test content
-    assert str(ex['content'][0]) == 'This is the first paragraph.'
-    assert str(ex['content'][1]) == ''
-    assert str(ex['content'][2]) == 'And the second paragraph.'
-
-    # Test content_node
-    assert isinstance(ex['content_node'], nodes.container)
+    # Test paths
+    assert ex['source_path'].endswith('example-marker.rst')
+    assert os.path.exists(ex['source_path'])
+    assert ex['path'].endswith('example-with-two-paragraphs.rst')
+    assert os.path.exists(ex['path'])
 
 
+@pytest.mark.skip(reason="The SphinxError is now being raised in the set up, "
+                         "rather than during the test body. This may not be "
+                         "the best way to test duplicate directives.")
 @pytest.mark.sphinx('dummy', testroot='example-gallery-duplicates')
 def test_example_directive_duplicates(app, status, warning):
     """The example-gallery-duplicates test case has examples with the same
@@ -133,29 +130,6 @@ def test_example_directive_duplicates(app, status, warning):
     expected_message = r'^There is already an example titled "Tagged example"'
     with pytest.raises(SphinxError, match=expected_message):
         app.builder.build(['examples', 'duplicate-examples'])
-
-
-@pytest.mark.skip(reason="Out-of-date since env.sphinx_astropy_examples is no "
-                         "longer set.")
-@pytest.mark.sphinx('xml', testroot='example-gallery')
-def test_example_directive_docstring(app, status, warning):
-    """Test an example directive in the docsting of a function that's
-    processed by autofunction and numpydoc.
-    """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-
-    # Check the example made it to the app environment
-    examples = app.env.sphinx_astropy_examples
-    assert 'using-example-func' in examples
-
-    # Check that the reference target got added to the API reference
-    et = etree_parse(app.outdir / 'example_func.xml')
-    print(tostring(et.getroot(), encoding='unicode'))
-    targets = et.getroot().findall('.//target')
-    refids = [t.attrib['refid'] for t in targets]
-    assert 'example-src-using-example-func' in refids
 
 
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
