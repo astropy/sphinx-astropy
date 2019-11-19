@@ -75,6 +75,16 @@ class ExamplePage:
         return self.source >= other.source
 
     @property
+    def docname(self):
+        """The docname of the standalone example page.
+
+        The Sphinx docname is similar to the page's file path relative to the
+        root of the source directory but does include the ``.rst`` extension.
+        """
+        return os.path.splitext(
+            os.path.relpath(self.filepath, start=self._srcdir))[0]
+
+    @property
     def rel_docname(self):
         """The docname of the standalone example page relative to the
         examples directory.
