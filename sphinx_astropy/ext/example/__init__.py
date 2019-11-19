@@ -17,6 +17,7 @@ from .marker import (
     ExampleMarkerDirective, ExampleMarkerNode, visit_example_marker_html,
     depart_example_marker_html)
 from .preprocessor import preprocess_examples
+from .postprocessor import postprocess_examples
 
 
 def setup(app):
@@ -43,6 +44,7 @@ def setup(app):
     app.add_directive('example', ExampleMarkerDirective)
     app.add_directive('example-content', ExampleContentDirective)
     app.connect('builder-inited', preprocess_examples)
+    app.connect('build-finished', postprocess_examples)
 
     # Toggles the gallery generation on or off.
     app.add_config_value('astropy_examples_enabled', False, 'env')
