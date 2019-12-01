@@ -1,7 +1,18 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""Tests for the sphinx_astropy.ext.example extension.
 
-from html.parser import HTMLParser
+These tests are organized into three basic types:
+
+1. Unit tests that don't depend on a Sphinx build.
+2. Unit tests that use the ``sphinx`` pytest mark. These tests operate on
+   the Sphinx application instance after a build and test environment
+   persistence.
+3. Tests that run a Sphinx build through its command-line interface and
+   analyze the resulting HTML product.
+"""
+
 import os.path
+import re
 import shutil
 from xml.etree.ElementTree import tostring
 
@@ -10,12 +21,12 @@ import pytest
 # Sphinx pytest fixtures only available in Sphinx 1.7+
 pytest.importorskip("sphinx", minversion="1.7")  # noqa E402
 
+from bs4 import BeautifulSoup
+import sphinx
 from sphinx.testing.util import etree_parse
 from sphinx.util import logging
-from sphinx.errors import SphinxError
 from sphinx.cmd.build import build_main
 
-import sphinx
 from sphinx_astropy.ext.example.marker import (
     format_title_to_example_id, format_title_to_source_ref_id,
     ExampleMarkerNode)
@@ -29,6 +40,10 @@ from sphinx_astropy.ext.example.utils import (
 
 sphinx_version = sphinx.version_info[:2]
 
+
+# ============================================================================
+# Unit tests (independent of a Sphinx build) =================================
+# ============================================================================
 
 @pytest.mark.parametrize(
     'title, expected',
@@ -50,6 +65,32 @@ def test_format_title_to_example_id(title, expected):
 )
 def test_format_title_to_source_ref_id(title, expected):
     assert expected == format_title_to_source_ref_id(title)
+
+
+# ============================================================================
+# Tests with sphinx pytest mark (operation on Sphinx application instance) ===
+# ============================================================================
+
+@pytest.mark.sphinx('html', testroot='example-gallery')
+def test_app_setup(app, status, warning):
+    """Test that event callbacks, directives, and nodes got added to the
+    Sphinx app.
+    """
+    # Check event callbacks
+    listeners = app.events.listeners
+    assert preprocess_examples in listeners['builder-inited'].values()
+
+    # Check registered configs
+    assert 'astropy_examples_dir' in app.config
+    assert 'astropy_examples_enabled' in app.config
+
+    # Check registered directives
+    assert is_directive_registered('example')
+    assert is_directive_registered('example-content')
+
+    # Check registered nodes
+    assert is_node_registered(ExampleMarkerNode)
+    assert is_node_registered(ExampleContentNode)
 
 
 @pytest.mark.sphinx('xml', testroot='example-gallery')
@@ -117,101 +158,6 @@ def test_example_env_persistence(app, status, warning):
     assert os.path.exists(ex['source_path'])
     assert ex['path'].endswith('example-with-two-paragraphs.rst')
     assert os.path.exists(ex['path'])
-
-
-@pytest.mark.skip(reason="The SphinxError is now being raised in the set up, "
-                         "rather than during the test body. This may not be "
-                         "the best way to test duplicate directives.")
-@pytest.mark.sphinx('dummy', testroot='example-gallery-duplicates')
-def test_example_directive_duplicates(app, status, warning):
-    """The example-gallery-duplicates test case has examples with the same
-    title, which is disallowed.
-    """
-    expected_message = r'^There is already an example titled "Tagged example"'
-    with pytest.raises(SphinxError, match=expected_message):
-        app.builder.build(['examples', 'duplicate-examples'])
-
-
-@pytest.mark.sphinx('dummy', testroot='example-gallery')
-def test_app_setup(app, status, warning):
-    """Test that event callbacks, directives, and nodes got added to the
-    Sphinx app.
-    """
-    # Check event callbacks
-    listeners = app.events.listeners
-    assert preprocess_examples in listeners['builder-inited'].values()
-
-    # Check registered configs
-    assert 'astropy_examples_dir' in app.config
-    assert 'astropy_examples_enabled' in app.config
-
-    # Check registered directives
-    assert is_directive_registered('example')
-    assert is_directive_registered('example-content')
-
-    # Check registered nodes
-    assert is_node_registered(ExampleMarkerNode)
-    assert is_node_registered(ExampleContentNode)
-
-
-@pytest.mark.skipif(
-    sphinx_version <= (1, 7),
-    reason="Example contains download role with external URL "
-           "that is not supported by Sphinx 1.7.")
-def test_parallel_reads(tmpdir, rootdir):
-    """Test that the examples extension works in a parallelized build.
-    """
-    case_dir = str(rootdir / 'test-example-gallery')
-    src_dir = os.path.join(tmpdir.strpath, 'docs')
-    shutil.copytree(case_dir, src_dir)
-
-    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
-
-    start_dir = os.path.abspath('.')
-    try:
-        os.chdir(src_dir)
-        status = build_main(argv=argv)
-    finally:
-        os.chdir(start_dir)
-    assert status == 0
-
-
-def test_parallel_reads_duplicates(tmpdir, rootdir):
-    """Test that the examples extension works in a parallelized build
-    where a failure from a duplicate example is expected.
-    """
-    case_dir = str(rootdir / 'test-example-gallery-duplicates')
-    src_dir = os.path.join(tmpdir.strpath, 'docs')
-    shutil.copytree(case_dir, src_dir)
-
-    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
-
-    start_dir = os.path.abspath('.')
-    try:
-        os.chdir(src_dir)
-        status = build_main(argv=argv)
-    finally:
-        os.chdir(start_dir)
-    assert status != 0
-
-
-def test_build_disabled_gallery(tmpdir, rootdir):
-    """Test that the examples extension works when galley generation is
-    disabled through the ``astropy_examples_enabled`` configuration.
-    """
-    case_dir = str(rootdir / 'test-example-gallery-disabled')
-    src_dir = os.path.join(tmpdir.strpath, 'docs')
-    shutil.copytree(case_dir, src_dir)
-
-    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
-
-    start_dir = os.path.abspath('.')
-    try:
-        os.chdir(src_dir)
-        status = build_main(argv=argv)
-    finally:
-        os.chdir(start_dir)
-    assert status == 0
 
 
 @pytest.mark.sphinx('dummy', testroot='example-gallery')
@@ -446,403 +392,452 @@ def test_index_pages(app, status, warning):
     assert contents == expected
 
 
-@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
-                         "rendered.")
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_links(app, status, warning):
-    """Test link resolution on standalone example pages.
+# ============================================================================
+# Test that operate on a Sphinx build through its CLI ========================
+# ============================================================================
+
+@pytest.fixture(scope="session")
+def example_gallery_build(tmpdir_factory, rootdir):
+    """Test fixture that builds the example-gallery test case with a
+    parallelized build.
     """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-    print(app.outdir)
+    case_dir = str(rootdir / 'test-example-gallery')
+    src_dir = str(tmpdir_factory.mktemp('example-gallery').join('docs'))
+    shutil.copytree(case_dir, src_dir)
 
-    # The api-link example has an example of an internal Python API link.
-    path = app.outdir / 'examples/api-link.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceInternalHtmlParser()
-    parser.feed(html)
-    # Make sure the APIs link's href got adjusted to be relative
-    # to the example page.
-    assert parser.has_href(
-        '../example_func.html'
-        '#sphinx_astropy.tests.example_module.example.example_func')
+    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
 
-    # The ref-link example has an example of a link made with the ref role.
-    path = app.outdir / 'examples/ref-link.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceInternalHtmlParser()
-    parser.feed(html)
-    assert parser.has_href('../example-marker.html#example-link-target')
+    start_dir = os.path.abspath('.')
+    try:
+        os.chdir(src_dir)
+        status = build_main(argv=argv)
+    finally:
+        os.chdir(start_dir)
+    assert status == 0
 
-    # The doc-link example has a doc role for making a link to another page.
-    path = app.outdir / 'examples/doc-link.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser.feed(html)
-    assert parser.has_href('../example-marker.html')
-
-    # The intersphinx-ref-link example has a ref role to the Astropy
-    # docs with intersphinx
-    path = app.outdir / 'examples/intersphinx-ref-link.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceExternalHtmlParser()
-    parser.feed(html)
-    assert parser.has_href('https://docs.astropy.org/en/stable/wcs/index.html#astropy-wcs')
-
-    # The intersphinx-api-link example has a ref role to the Astropy
-    # docs with intersphinx
-    path = app.outdir / 'examples/intersphinx-api-link.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceExternalHtmlParser()
-    parser.feed(html)
-    assert parser.has_href('https://docs.astropy.org/en/stable/api/astropy.table.Table.html#astropy.table.Table')
-
-    # The header-reference-target-example example has an example of a ref
-    # link to a target on a header that's also part of the example content.
-    # This shows that the link ends up pointing back to the original.
-    path = app.outdir / 'examples/header-reference-target-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceInternalHtmlParser()
-    parser.feed(html)
-    assert parser.has_href('../ref-targets.html#section-target')
+    return src_dir, os.path.join(src_dir, '_build/html'), status
 
 
-@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
-                         "rendered.")
-@pytest.mark.skipif(
-    sphinx_version <= (1, 7),
-    reason="Named equations do not work with Sphinx 1.7.")
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_named_equation(app, status, warning):
-    """The named-equation example has an example of a an equation with a
-    label, and a reference to that label.
-    This shows that the link points back to the original equation.
+@pytest.fixture(scope="session")
+def example_gallery_duplicates_build(tmpdir_factory, rootdir):
+    """Test fixture that builds the example-gallery-duplicates test case
+    where an example is duplicated.
+
+    This build should fail
     """
-    path = app.outdir / 'examples/named-equation.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceInternalHtmlParser()
-    parser.feed(html)
-    assert parser.has_href('../ref-targets.html#equation-euler')
+    case_dir = str(rootdir / 'test-example-gallery-duplicates')
+    src_dir = str(tmpdir_factory.mktemp('example-gallery-duplicates').join('docs'))
+    shutil.copytree(case_dir, src_dir)
+
+    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
+
+    start_dir = os.path.abspath('.')
+    try:
+        os.chdir(src_dir)
+        status = build_main(argv=argv)
+    finally:
+        os.chdir(start_dir)
+    assert status != 0
+
+    return src_dir, os.path.join(src_dir, '_build/html'), status
 
 
-@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
-                         "rendered.")
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_images(app, status, warning):
-    """Test resolution of image-like items in examples.
+@pytest.fixture(scope="session")
+def example_gallery_disabled_build(tmpdir_factory, rootdir):
+    """Test fixture that builds a site where example gallery generation is
+    disabled through the ``astropy_examples_enabled`` configuration.
     """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-    print(app.outdir)
+    case_dir = str(rootdir / 'test-example-gallery-disabled')
+    src_dir = str(tmpdir_factory.mktemp('example-gallery-disabled').join('docs'))
+    shutil.copytree(case_dir, src_dir)
 
-    # A regular image directive with a relative URI to a local image.
-    path = app.outdir / 'examples/example-with-an-image.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ImgHtmlParser()
-    parser.feed(html)
-    # Make sure the APIs link's href got adjusted to be relative
-    # to the example page.
-    assert parser.has_img_src(
-        '../_images/astropy_project_logo.svg')
+    argv = ['-j 4', '-W', '-b', 'html', src_dir, '_build/html']
 
-    # A regular image directive with an external URI
-    path = app.outdir / 'examples/example-with-an-external-image.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ImgHtmlParser()
-    parser.feed(html)
-    # Make sure the APIs link's href got adjusted to be relative
-    # to the example page.
-    assert parser.has_img_src(
-        'https://www.astropy.org/images/astropy_project_logo.svg')
+    start_dir = os.path.abspath('.')
+    try:
+        os.chdir(src_dir)
+        status = build_main(argv=argv)
+    finally:
+        os.chdir(start_dir)
+    assert status == 0
 
-    # A figure directive with a relative URI to a local image.
-    path = app.outdir / 'examples/example-with-a-figure.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ImgHtmlParser()
-    parser.feed(html)
-    # Make sure the APIs link's href got adjusted to be relative
-    # to the example page.
-    assert parser.has_img_src(
-        '../_images/astropy_project_logo.svg')
-
-    # A figure directive with an external image URI.
-    path = app.outdir / 'examples/example-with-an-external-figure.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ImgHtmlParser()
-    parser.feed(html)
-    # Make sure the APIs link's href got adjusted to be relative
-    # to the example page.
-    assert parser.has_img_src(
-        'https://www.astropy.org/images/astropy_project_logo.svg')
+    return src_dir, os.path.join(src_dir, '_build/html'), status
 
 
-@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
-                         "rendered.")
-@pytest.mark.skipif(
-    sphinx_version <= (1, 7),
-    reason="The plot extension works unusually with Sphinx 1.7.")
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_matplotlib_plot(app, status, warning):
-    """A matplotlib-based plot directive.
-    """
-    path = app.outdir / 'examples/matplotlib-plot.html'
-    with open(path) as fh:
-        html = fh.read()
-    img_parser = ImgHtmlParser()
-    img_parser.feed(html)
-    assert img_parser.has_img_src(
-        '../_images/images-1.png')
-    a_parser = ReferenceExternalHtmlParser()
-    a_parser.feed(html)
-    assert a_parser.has_href('../images-1.py')
-    assert a_parser.has_href('../images-1.png')
-    assert a_parser.has_href('../images-1.hires.png')
-    assert a_parser.has_href('../images-1.pdf')
-
-
-@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
-                         "rendered.")
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_includes(app, status, warning):
-    """Test resolution of includes-based items in examples.
-    """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-    print(app.outdir)
-
-    # A regular image directive with a relative URI to a local image.
-    path = app.outdir / 'examples/example-using-the-include-directive.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ParagraphHtmlParser()
-    parser.feed(html)
-    assert parser.has_p_starting_with(
-        'This is sample content from a file')
-
-    # A regular image directive with a relative URI to a local image.
-    path = app.outdir / 'examples/literalinclude-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = PreTagHtmlParser()
-    parser.feed(html)
-    assert parser.pre_count == 1
-
-    # An internal download reference
-    path = app.outdir / 'examples/file-download-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceDownloadHtmlParser()
-    parser.feed(html)
-    assert parser.has_href_endswith('hello.py')
-
-    # An absolute internal download reference
-    path = app.outdir / 'examples/absolute-file-download-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceDownloadHtmlParser()
-    parser.feed(html)
-    assert parser.has_href_endswith('astropy_project_logo.svg')
-
-
-@pytest.mark.skip(reason="Out-of-date since example content isn't currently "
-                         "rendered.")
 @pytest.mark.skipif(
     sphinx_version <= (1, 7),
     reason="Example contains download role with external URL "
            "that is not supported by Sphinx 1.7.")
-@pytest.mark.sphinx('html', testroot='example-gallery')
-def test_external_downloads(app, status, warning):
-    """Test a download role pointing to external content.
+def test_example_gallery_build(example_gallery_build):
+    """Test the overall build status code for the example-gallery case.
     """
-    app.verbosity = 2
-    logging.setup(app, status, warning)
-    app.builder.build_all()
-    print(app.outdir)
+    _, _, status = example_gallery_build
+    assert status == 0
 
-    # An external download reference
-    path = app.outdir / 'examples/external-file-download-example.html'
-    with open(path) as fh:
-        html = fh.read()
-    parser = ReferenceDownloadHtmlParser()
-    parser.feed(html)
-    assert parser.has_href(
+
+def test_example_gallery_duplicates_build(example_gallery_duplicates_build):
+    """Test the overall build status code for the example-gallery-duplicates
+    case.
+
+    This build is expected to fail (non-zero status) because there are examples
+    with the same title, which is disallowed.
+    """
+    _, _, status = example_gallery_duplicates_build
+    assert status != 0
+
+
+def test_example_gallery_disabled_build(example_gallery_disabled_build):
+    """Test the overall build status code for the example-gallery-disabled
+    case.
+    """
+    _, _, status = example_gallery_disabled_build
+    assert status == 0
+
+
+def parse_example_page(example_build, example_id):
+    """Parse an HTML page of a standalone example from an example site build.
+    """
+    _, html_dir, _ = example_build
+    path = os.path.join(html_dir, 'examples', '{}.html'.format(example_id))
+    with open(path) as f:
+        soup = BeautifulSoup(f, 'html.parser')
+    return soup
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_api_link(example_gallery_build):
+    """Test that the API link in the api-link example got resolved correctly
+    with a relative URL.
+    """
+    soup = parse_example_page(example_gallery_build, 'api-link')
+    assert contains_href(
+        soup,
+        "../example_func.html"
+        "#sphinx_astropy.tests.example_module.example.example_func"
+    )
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_ref_link(example_gallery_build):
+    """The ref-link example has an example of a link made with the ref role.
+    """
+    soup = parse_example_page(example_gallery_build, 'ref-link')
+    assert contains_href(soup, '../example-marker.html#example-link-target')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_doc_link(example_gallery_build):
+    """The doc-link example has a doc role for making a link to another page.
+    """
+    soup = parse_example_page(example_gallery_build, 'doc-link')
+    assert contains_href(soup, '../example-marker.html')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_intersphinx_ref_link(example_gallery_build):
+    """The intersphinx-ref-link example has a ref role to the Astropy
+    docs with intersphinx
+    """
+    soup = parse_example_page(example_gallery_build, 'intersphinx-ref-link')
+    assert contains_href(
+        soup,
+        'https://docs.astropy.org/en/stable/wcs/index.html#astropy-wcs',
+        selector='.body a.reference.external'
+    )
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_intersphinx_api_link(example_gallery_build):
+    """The intersphinx-api-link example has a ref role to the Astropy
+    docs with intersphinx.
+    """
+    soup = parse_example_page(example_gallery_build, 'intersphinx-api-link')
+    expected_href = (
+        'https://docs.astropy.org/en/stable/api/astropy.table.Table.html'
+        '#astropy.table.Table'
+    )
+    for atag in soup.select('.body a.reference.external'):
+        if atag['href'] == expected_href:
+            return
+    assert False  # didn't find the expected link
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_header_reference_target(example_gallery_build):
+    """The header-reference-target-example example has an example of a ref
+    link to a target on a header that's also part of the example content.
+    This shows that the link ends up pointing back to the original.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'header-reference-target-example')
+    assert contains_href(soup, '#section-target')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="Named equations do not work with Sphinx 1.7.")
+def test_named_equation(example_gallery_build):
+    """The named-equation example has an example of a an equation with a
+    label, and a reference to that label.
+    This shows that the link points back to the original equation.
+    """
+    soup = parse_example_page(example_gallery_build, 'named-equation')
+    assert contains_href(soup, '#equation-euler')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_example_with_an_image(example_gallery_build):
+    """A regular image directive with a relative URI to a local image.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'example-with-an-image')
+    assert contains_linked_img(
+        soup,
+        '../_images/astropy_project_logo.svg')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_example_with_an_external_image(example_gallery_build):
+    """A regular image directive with an external URI.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'example-with-an-external-image')
+    assert contains_linked_img(
+        soup,
+        'https://www.astropy.org/images/astropy_project_logo.svg')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_example_with_a_figure(example_gallery_build):
+    """A figure directive with a relative URI to a local image.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'example-with-a-figure')
+    assert contains_linked_img(
+        soup,
+        '../_images/astropy_project_logo.svg')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_example_with_an_external_figure(example_gallery_build):
+    """A figure directive with a external image URI.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'example-with-an-external-figure')
+    assert contains_linked_img(
+        soup,
+        'https://www.astropy.org/images/astropy_project_logo.svg')
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_matplotlib_plot(example_gallery_build):
+    """A matplotlib-based plot directive.
+    """
+    soup = parse_example_page(example_gallery_build, 'matplotlib-plot')
+
+    assert contains_external_href(soup, '../images-1.py')
+    assert contains_external_href(soup, '../images-1.png')
+    assert contains_external_href(soup, '../images-1.hires.png')
+    assert contains_external_href(soup, '../images-1.pdf')
+
+    img_tag = soup.select('.body img')[0]
+    assert img_tag['src'] == '../_images/images-1.png'
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_include_directive(example_gallery_build):
+    """Test an example with content brought in from an include directive.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'example-using-the-include-directive')
+    for tag in soup.select('.body p'):
+        print(tag)
+        if tag.text.startswith('This is sample content from a file'):
+            return
+    assert False  # expected content was not found
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_literalinclude_directive(example_gallery_build):
+    """Test code inserted with a literalinclude directive.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'literalinclude-example')
+    tags = soup.select('.body pre')
+    assert len(tags) == 1
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_file_download_example(example_gallery_build):
+    """Test the link made by a download directive to a file hosted on the
+    site itself.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'file-download-example')
+    for tag in soup.select('.body a.reference.download.internal'):
+        match = re.match(
+            r'../_downloads/[a-z0-9]+/hello\.py',
+            tag['href']
+        )
+        if match is not None:
+            return
+    assert False  # link was not found
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_absolute_file_download_example(example_gallery_build):
+    """Test an absolute link to a file hosted on the site, made with a download
+    directive.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'absolute-file-download-example')
+    for tag in soup.select('.body a.reference.download.internal'):
+        match = re.match(
+            r'../_downloads/[a-z0-9]+/astropy_project_logo\.svg',
+            tag['href']
+        )
+        if match is not None:
+            return
+    assert False  # link was not found
+
+
+@pytest.mark.skipif(
+    sphinx_version <= (1, 7),
+    reason="example-gallery site contains download role with external URL "
+           "that is not supported by Sphinx 1.7.")
+def test_external_file_download_example(example_gallery_build):
+    """Test an absolute link to a file hosted on the site, made with a download
+    directive.
+    """
+    soup = parse_example_page(example_gallery_build,
+                              'external-file-download-example')
+    expected_href = (
         'https://raw.githubusercontent.com/astropy/astropy/master/README.rst')
+    for tag in soup.select('.body a.reference.download.external'):
+        if tag['href'] == expected_href:
+            return
+    assert False  # link was not found
 
 
-class ReferenceExternalHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for Sphinx's external
-    reference link.
+def contains_href(soup, expected_href, selector='.body a.reference.internal'):
+    """Test if a BeautifulSoup tree contains an ``<a>`` with an expected
+    href (optimized for Sphinx links with a ``reference internal`` class).
 
-    Internal reference links have a class ``reference external``. The `links`
-    attribute is a list of such links, which are represented as a dictionary
-    of their attributes.
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        HTML content of a Sphinx page, parsed by BeautifulSoup.
+    expected_href : str
+        The expected href value of a tag on the page.
+    selector : str
+        The CSS selector for finding tags that might contain the expected href.
+        The default selector is optimized to find ``<a>`` tags in the body of
+        a Sphinx page with a ``reference internal``. For example, links
+        made using the ``ref`` and ``doc`` roles.
+
+    Returns
+    -------
+    contains : bool
+        `True` if the link is found, `False` otherwise.
     """
-
-    def __init__(self, *args, **kwargs):
-        self.links = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            try:
-                if 'reference external' in attrdict['class']:
-                    # matches
-                    self.links.append(attrdict)
-            except KeyError:
-                pass
-
-    def has_href(self, href):
-        """Test if a link with a particular href is in the parsed HTML.
-        """
-        for link in self.links:
-            if link['href'] == href:
-                return True
-        return False
+    for atag in soup.select(selector):
+        if atag['href'] == expected_href:
+            return True
+    return False
 
 
-class ReferenceInternalHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for Sphinx's internal
-    reference link.
+def contains_external_href(soup, expected_href,
+                           selector='.body a.reference.external'):
+    """Test if a BeautifulSoup tree contains an ``<a>`` with an expected
+    href (optimized for Sphinx links with a ``reference external`` class).
 
-    Internal reference links have a class ``reference internal``. The `links`
-    attribute is a list of such links, which are represented as a dictionary
-    of their attributes.
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        HTML content of a Sphinx page, parsed by BeautifulSoup.
+    expected_href : str
+        The expected href value of a tag on the page.
+    selector : str
+        The CSS selector for finding tags that might contain the expected href.
+        The default selector is optimized to find ``<a>`` tags in the body of
+        a Sphinx page with a ``reference internal``. For example, links
+        made using intersphinx to other projects.
+
+    Returns
+    -------
+    contains : bool
+        `True` if the link is found, `False` otherwise.
     """
-
-    def __init__(self, *args, **kwargs):
-        self.links = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            try:
-                if 'reference internal' in attrdict['class']:
-                    # matches
-                    self.links.append(attrdict)
-            except KeyError:
-                pass
-
-    def has_href(self, href):
-        """Test if a link with a particular href is in the parsed HTML.
-        """
-        for link in self.links:
-            if link['href'] == href:
-                return True
-        return False
+    return contains_href(soup, expected_href, selector=selector)
 
 
-class ImgHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for ``img`` tags.
+def contains_linked_img(soup, expected_src,
+                        selector='.body a.image-reference'):
+    """Test if a BeautifulSoup tree contains an ``img`` tag with the expected
+    src attribute that's also wrapped in an ``a`` tag.
+
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        HTML content of a Sphinx page, parsed by BeautifulSoup.
+    expected_src : str
+        The expected src value of an ``img`` tag on the page (and the href
+        value of the wrapping ``a`` tag).
+    selector : str
+        The CSS selector for finding ``<a>`` tags that wrap an image.
+
+    Returns
+    -------
+    contains : bool
+        `True` if the linked image is found, `False` otherwise.
     """
-
-    def __init__(self, *args, **kwargs):
-        self.imgs = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'img':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            self.imgs.append(attrdict)
-
-    def has_img_src(self, uri):
-        """Test if an image is present based on its URI.
-        """
-        for img in self.imgs:
-            if img['src'] == uri:
-                return True
-        return False
-
-
-class ParagraphHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for ``p`` tags.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.paragraphs = []
-        self.open_tag = False
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'p':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            self.paragraphs.append({'tag': attrdict, 'content': None})
-            self.open_tag = True
-
-    def handle_data(self, data):
-        if self.open_tag:
-            self.paragraphs[-1]['content'] = data
-            self.open_tag = False
-
-    def has_p_starting_with(self, content):
-        """Test if a paragraph exists that begins with the given content.
-        """
-        for p in self.paragraphs:
-            if p['content'].startswith(content):
-                return True
-        return False
-
-
-class PreTagHtmlParser(HTMLParser):
-    """HTML Parser that counts ``pre`` tags.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.pre_count = 0
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'pre':
-            self.pre_count += 1
-
-
-class ReferenceDownloadHtmlParser(HTMLParser):
-    """HTML Parser that specifically parses for Sphinx's ``reference download``
-    links.
-
-    Internal reference links have a class ``reference internal``. The `links`
-    attribute is a list of such links, which are represented as a dictionary
-    of their attributes.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.links = []
-        super().__init__(*args, **kwargs)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            attrdict = {a[0]: a[1] for a in attrs if len(a) == 2}
-            try:
-                if 'reference download' in attrdict['class']:
-                    # matches
-                    self.links.append(attrdict)
-            except KeyError:
-                pass
-
-    def has_href(self, href):
-        """Test if a link with a particular href is in the parsed HTML.
-        """
-        for link in self.links:
-            if link['href'] == href:
-                return True
-        return False
-
-    def has_href_endswith(self, path):
-        for link in self.links:
-            if link['href'].endswith(path):
-                return True
-        return False
+    for atag in soup.select(selector):
+        # Check the href of both the <a> tag and the src of the <img> itself
+        if atag['href'] == expected_src and atag.img['src'] == expected_src:
+            return True
+    return False
