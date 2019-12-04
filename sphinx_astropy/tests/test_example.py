@@ -588,7 +588,10 @@ def test_header_reference_target(example_gallery_build):
     """
     soup = parse_example_page(example_gallery_build,
                               'header-reference-target-example')
+    # ref link inside the scope of the example
     assert contains_href(soup, '#section-target')
+    # ref link outside the scope of the example
+    assert contains_href(soup, '../ref-targets.html#section-2-target')
 
 
 @pytest.mark.skipif(

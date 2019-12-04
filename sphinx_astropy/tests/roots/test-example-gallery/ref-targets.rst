@@ -18,7 +18,14 @@ The standalone versions of these examples need to be stripped of these reference
 
    Link to the header: :ref:`section-target`.
 
+   Link to a header outside the example: :ref:`section-2-target`.
+
 A ``ref`` link: :ref:`section-target` outside the example.
+
+.. _section-2-target:
+
+Example of a named equation
+---------------------------
 
 .. example:: Named equation
    :tags: reference target

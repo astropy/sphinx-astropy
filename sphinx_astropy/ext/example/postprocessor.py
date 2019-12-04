@@ -224,10 +224,19 @@ def adapt_relative_urls(tree, root_path, source_page_path,
     # well when browsing without a webserver. We need to make them relative
     # to the destination page.
     for tag in tree.find_all('a'):
-        if EXTERNAL_URI.match(tag['href']) or tag['href'].startswith('#'):
+        if EXTERNAL_URI.match(tag['href']):
             # Skip processing any link that isn't a relative link.
             continue
-        if tag['href'].startswith('.//'):
+        elif tag['href'].startswith('#'):
+            # If an anchor link goes to an ID that doesn't exist in the example
+            # content, then turn it into a link to the source page.
+            if len(tree.select(tag['href'])) == 0:
+                rel_path = os.path.relpath(
+                    source_page_path,
+                    start=os.path.dirname(new_page_path)
+                )
+                tag['href'] = ''.join((rel_path, tag['href']))
+        elif tag['href'].startswith('.//'):
             # Adapt external links made by the Matplotlib plot extension. They
             # start with ".//" and are meant to be relative to the site root.
             abs_path = os.path.join(root_path, tag['href'][3:])  # strip .//
