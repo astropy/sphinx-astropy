@@ -394,11 +394,11 @@ def test_index_pages(app, status, warning):
 # ============================================================================
 
 @pytest.fixture(scope="session")
-def example_gallery_build(tmpdir_factory, rootdir):
+def example_gallery_build(tmpdir_factory, casesdir):
     """Test fixture that builds the example-gallery test case with a
     parallelized build.
     """
-    case_dir = str(rootdir / 'test-example-gallery')
+    case_dir = str(casesdir / 'test-example-gallery')
     src_dir = str(tmpdir_factory.mktemp('example-gallery').join('docs'))
     shutil.copytree(case_dir, src_dir)
 
@@ -416,13 +416,13 @@ def example_gallery_build(tmpdir_factory, rootdir):
 
 
 @pytest.fixture(scope="session")
-def example_gallery_duplicates_build(tmpdir_factory, rootdir):
+def example_gallery_duplicates_build(tmpdir_factory, casesdir):
     """Test fixture that builds the example-gallery-duplicates test case
     where an example is duplicated.
 
     This build should fail
     """
-    case_dir = str(rootdir / 'test-example-gallery-duplicates')
+    case_dir = str(casesdir / 'test-example-gallery-duplicates')
     src_dir = str(tmpdir_factory.mktemp('example-gallery-duplicates').join('docs'))
     shutil.copytree(case_dir, src_dir)
 
@@ -440,11 +440,11 @@ def example_gallery_duplicates_build(tmpdir_factory, rootdir):
 
 
 @pytest.fixture(scope="session")
-def example_gallery_disabled_build(tmpdir_factory, rootdir):
+def example_gallery_disabled_build(tmpdir_factory, casesdir):
     """Test fixture that builds a site where example gallery generation is
     disabled through the ``astropy_examples_enabled`` configuration.
     """
-    case_dir = str(rootdir / 'test-example-gallery-disabled')
+    case_dir = str(casesdir / 'test-example-gallery-disabled')
     src_dir = str(tmpdir_factory.mktemp('example-gallery-disabled').join('docs'))
     shutil.copytree(case_dir, src_dir)
 
