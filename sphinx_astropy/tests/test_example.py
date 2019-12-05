@@ -18,9 +18,6 @@ from xml.etree.ElementTree import tostring
 
 import pytest
 
-# Sphinx pytest fixtures only available in Sphinx 1.7+
-pytest.importorskip("sphinx", minversion="1.7")  # noqa E402
-
 from bs4 import BeautifulSoup
 import sphinx
 from sphinx.testing.util import etree_parse
