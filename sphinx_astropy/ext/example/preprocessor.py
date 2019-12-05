@@ -4,6 +4,7 @@ __all__ = ('preprocess_examples', 'detect_examples',)
 
 import re
 import os
+import shutil
 
 from sphinx.util.logging import getLogger
 from sphinx.errors import SphinxError
@@ -59,15 +60,24 @@ def preprocess_examples(app):
     logger.debug('[sphinx_astropy] preprocessing example gallery pages')
 
     # Create directory for example pages inside the documentation source dir
+    # Incrememental rebuilds of the example gallery aren't supported yet;
+    # so for now the examples directory is cleared out before each rebuild.
     examples_dir = os.path.join(app.srcdir, app.config.astropy_examples_dir)
-    os.makedirs(examples_dir, exist_ok=True)
+    if os.path.isdir(examples_dir):
+        shutil.rmtree(examples_dir)
+    os.makedirs(examples_dir)
 
     renderer = Renderer(
         builder=app.builder,
         h1_underline=app.config.astropy_examples_h1)
 
     example_pages = []
+    example_docname_prefix = app.config.astropy_examples_dir + '/'
     for docname in app.env.found_docs:
+        if docname.startswith(example_docname_prefix):
+            # Don't scan for examples in examples directory because those
+            # docs were deleted at the start of this function.
+            continue
         filepath = app.env.doc2path(docname)
         for detected_example in detect_examples(filepath, app.env):
             example_page = ExamplePage(detected_example, examples_dir, app)
