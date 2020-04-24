@@ -7,7 +7,13 @@ from docutils.parsers.rst import Directive
 class GenerateConfig(Directive):
     """
     Directive to generate the configuration file for a package and
-    include it in the documentation as a literal code block.
+    include it in the documentation as a literal code block. This relies
+    on the ``generate_config`` function, added in Astropy 4.1.
+
+    Example::
+
+        .. generate_config:: astropy
+
     """
 
     has_content = False
