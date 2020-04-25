@@ -132,6 +132,7 @@ extensions = [
     'sphinx_automodapi.smart_resolver',
     'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.changelog_links',
+    'sphinx_astropy.ext.generate_config',
     'sphinx_astropy.ext.missing_static',
     'sphinx.ext.mathjax']
 
