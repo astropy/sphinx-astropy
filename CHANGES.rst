@@ -1,10 +1,10 @@
 Changes in sphinx-astropy
 =========================
 
-1.3 (unreleased)
+1.3 (2020-04-28)
 ----------------
 
-- No changes yet.
+- Add extension to include generated config in the docs. [#30]
 
 1.2 (2019-11-12)
 ----------------
