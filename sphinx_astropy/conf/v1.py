@@ -47,13 +47,13 @@ intersphinx_mapping = {
     'pythonloc': ('http://docs.python.org/',
                   path.abspath(path.join(path.dirname(__file__), '..',
                                          'local', 'python3_local_links.inv'))),
-    'numpy': ('https://docs.scipy.org/doc/numpy/',
+    'numpy': ('https://numpy.org/doc/stable/',
               (None, 'http://data.astropy.org/intersphinx/numpy.inv')),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/',
               (None, 'http://data.astropy.org/intersphinx/scipy.inv')),
     'matplotlib': ('https://matplotlib.org/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
-    'astropy': ('http://docs.astropy.org/en/stable/', None),
+    'astropy': ('https://docs.astropy.org/en/stable/', None),
     'h5py': ('http://docs.h5py.org/en/stable/', None)}
 
 # List of patterns, relative to source directory, that match files and
