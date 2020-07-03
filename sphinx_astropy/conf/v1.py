@@ -127,7 +127,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.viewcode',
-    'numpydoc',
+    'sphinx.ext.napoleon',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_astropy.ext.doctest',
