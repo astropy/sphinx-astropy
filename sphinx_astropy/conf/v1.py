@@ -298,14 +298,6 @@ latex_elements['preamble'] = r"""
 \DeclareUnicodeCharacter{00B0}{\ensuremath{^{\circ}}}
 \DeclareUnicodeCharacter{2032}{\ensuremath{^{\prime}}}
 \DeclareUnicodeCharacter{2033}{\ensuremath{^{\prime\prime}}}
-
-% Make the "warning" and "notes" sections use a sans-serif font to
-% make them stand out more.
-\renewenvironment{notice}[2]{
-  \def\py@noticetype{#1}
-  \csname py@noticestart@#1\endcsname
-  \textsf{\textbf{#2}}
-}{\csname py@noticeend@\py@noticetype\endcsname}
 """
 
 # Documents to append as an appendix to all manuals.
