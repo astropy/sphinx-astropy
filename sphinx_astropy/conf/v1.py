@@ -54,7 +54,7 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
     'astropy': ('https://docs.astropy.org/en/stable/', None),
-    'h5py': ('http://docs.h5py.org/en/stable/', None)}
+    'h5py': ('https://docs.h5py.org/en/stable/', None)}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
