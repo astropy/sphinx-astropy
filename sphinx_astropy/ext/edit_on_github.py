@@ -16,7 +16,7 @@ It has the following configuration options (to be set in the project's
 * ``edit_on_github_branch``
     The name of the branch to edit.  If this is a released version,
     this should be a git tag referring to that version.  For a
-    dev version, it often makes sense for it to be "master".  It
+    dev version, it often makes sense for it to be "main".  It
     may also be a git hash.
 
 * ``edit_on_github_source_root``
@@ -149,7 +149,7 @@ def html_page_context(app, pagename, templatename, context, doctree):
 def setup(app):
 
     app.add_config_value('edit_on_github_project', 'REQUIRED', True)
-    app.add_config_value('edit_on_github_branch', 'master', True)
+    app.add_config_value('edit_on_github_branch', 'main', True)
     app.add_config_value('edit_on_github_source_root', 'lib', True)
     app.add_config_value('edit_on_github_doc_root', 'doc', True)
     app.add_config_value('edit_on_github_docstring_message',

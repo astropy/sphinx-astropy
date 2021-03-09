@@ -69,8 +69,8 @@ source_suffix = '.rst'
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
-# The master toctree document.
-master_doc = 'index'
+# The main toctree document.
+main_doc = 'index'
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents. Set to the "smart" one.
