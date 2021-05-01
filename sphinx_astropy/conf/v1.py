@@ -14,6 +14,7 @@ import warnings
 
 from os import path
 
+import astropy
 import sphinx
 from distutils.version import LooseVersion
 
@@ -110,17 +111,19 @@ numpydoc_xref_ignore = {
 # https://github.com/numpy/numpydoc/blob/b352cd7635f2ea7748722f410a31f937d92545cc/numpydoc/xref.py#L62-L94
 # numpydoc_xref_aliases = {}
 
-# TODO! refactor if #11678 is implemented
-from astropy.units.physical import _units_and_physical_types
 numpydoc_xref_aliases_astropy_physical_type = {}
-for _, ptypes in _units_and_physical_types:
-    ptypes = {ptypes} if isinstance(ptypes, str) else ptypes
-    for ptype in ptypes:
-        key = f"'{ptype}'"
-        val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed.
-        numpydoc_xref_aliases_astropy_physical_type[key] = val
+if float(astropy.__version__[:3]) >= 4.3:
 
-del ptypes, key, val
+    # TODO! refactor if #11678 is implemented
+    from astropy.units.physical import _units_and_physical_types
+    for _, ptypes in _units_and_physical_types:
+        ptypes = {ptypes} if isinstance(ptypes, str) else ptypes
+        for ptype in ptypes:
+            key = f"'{ptype}'"
+            val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed.
+            numpydoc_xref_aliases_astropy_physical_type[key] = val
+    
+    del ptypes, key, val
 
 # -- Project information ------------------------------------------------------
 
