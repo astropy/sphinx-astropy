@@ -88,6 +88,40 @@ rst_epilog = """
 
 suppress_warnings = ['app.add_directive', ]
 
+# -- NumpyDoc X-Ref ------------------------
+
+# Whether to create cross-references for the parameter types in the
+# Parameters, Other Parameters, Returns and Yields sections of the docstring.
+# Should be set = True in packages manually! included here as reference.
+# numpydoc_xref_param_type = False
+
+# Words not to cross-reference. Most likely, these are common words used in
+# parameter type descriptions that may be confused for classes of the same
+# name. This can be overwritten or modified in packages and is provided here for
+# convenience.
+numpydoc_xref_ignore = {
+    'type', 'optional', 'default', 'or', 'of', 'method', 'instance', "like",
+    "class", 'subclass', "keyword-only", "default", "thereof"
+}
+
+# Mappings to fully qualified paths (or correct ReST references) for the
+# aliases/shortcuts used when specifying the types of parameters.
+# Numpy provides some defaults
+# https://github.com/numpy/numpydoc/blob/b352cd7635f2ea7748722f410a31f937d92545cc/numpydoc/xref.py#L62-L94
+# numpydoc_xref_aliases = {}
+
+# TODO! refactor if #11678 is implemented
+from astropy.units.physical import _units_and_physical_types
+numpydoc_xref_aliases_astropy_physical_type = {}
+for _, ptypes in _units_and_physical_types:
+    ptypes = {ptypes} if isinstance(ptypes, str) else ptypes
+    for ptype in ptypes:
+        key = f"'{ptype}'"
+        val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed.
+        numpydoc_xref_aliases_astropy_physical_type[key] = val
+
+del ptypes, key, val
+
 # -- Project information ------------------------------------------------------
 
 # There are two options for replacing |today|: either, you set today to some
