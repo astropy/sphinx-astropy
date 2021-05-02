@@ -109,9 +109,17 @@ numpydoc_xref_ignore = {
 # aliases/shortcuts used when specifying the types of parameters.
 # Numpy provides some defaults
 # https://github.com/numpy/numpydoc/blob/b352cd7635f2ea7748722f410a31f937d92545cc/numpydoc/xref.py#L62-L94
-# numpydoc_xref_aliases = {}
+numpydoc_xref_aliases = {
+    # Python terms
+    "function": ":term:`python:function`",
+    "iterator": ":term:`python:iterator`",
+    "mapping": ":term:`python:mapping`",
+}
 
-numpydoc_xref_aliases_astropy_physical_type = {}
+# Aliases to Astropy's physical types. In packages these can be turned on with
+# ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_physical_type)``
+# (if astropy is in the intersphinx mapping).
+numpydoc_xref_aliases_astropy_physical_type = {}  # works even if older astropy
 if float(astropy.__version__[:3]) >= 4.3:
 
     # TODO! refactor if #11678 is implemented
@@ -122,8 +130,8 @@ if float(astropy.__version__[:3]) >= 4.3:
             key = f"'{ptype}'"
             val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed.
             numpydoc_xref_aliases_astropy_physical_type[key] = val
-    
-    del ptypes, key, val
+
+    del ptypes, key, val, _units_and_physical_types
 
 # -- Project information ------------------------------------------------------
 
