@@ -11,6 +11,7 @@
 
 import os
 import warnings
+from collections import ChainMap
 
 from os import path
 
@@ -156,6 +157,16 @@ if float(astropy.__version__[:3]) >= 4.3:
             numpydoc_xref_aliases_astropy_physical_type[key] = val
 
     del ptypes, key, val, _units_and_physical_types
+
+
+# Convenient collection of all of astropy's options for numpydoc xref.
+# In packages all the astropy additions can be turned on with
+# ``numpydoc_xref_aliases.update(numpydoc_xref_astropy_aliases)``
+# (if astropy is in the intersphinx mapping).
+numpydoc_xref_astropy_aliases = ChainMap(  # important at the top
+    numpydoc_xref_aliases_astropy_glossary,
+    numpydoc_xref_aliases_astropy_physical_type
+)
 
 # -- Project information ------------------------------------------------------
 
