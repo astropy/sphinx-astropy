@@ -116,6 +116,30 @@ numpydoc_xref_aliases = {
     "mapping": ":term:`python:mapping`",
 }
 
+# Aliases to Astropy's glossary. In packages these can be turned on with
+# ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_glossary)``
+# (if astropy is in the intersphinx mapping).
+numpydoc_xref_aliases_astropy_glossary = {}  # works even if older astropy
+if float(astropy.__version__[:3]) >= 4.3:
+    numpydoc_xref_aliases_astropy_glossary = {
+        # general
+        "-like": ":term:`astropy:-like`",
+        # "number": ":term:`number`",
+        # "writable": ":term:`writable file-like object`",
+        # "readable": ":term:`readable file-like object`",
+        # coordinates
+        "angle-like": ":term:`astropy:angle-like`",
+        "coordinate-like": ":term:`astropy:coordinate-like`",
+        "frame-like": ":term:`astropy:frame-like`",
+        # units
+        "unit-like": ":term:`astropy:unit-like`",
+        "quantity-like": ":term:`astropy:quantity-like`",
+        # table
+        "table-like": ":term:`astropy:table-like`",
+        # time
+        "time-like": ":term:`astropy:time-like`",
+    }
+
 # Aliases to Astropy's physical types. In packages these can be turned on with
 # ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_physical_type)``
 # (if astropy is in the intersphinx mapping).
