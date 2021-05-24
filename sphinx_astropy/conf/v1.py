@@ -15,9 +15,15 @@ from collections import ChainMap
 
 from os import path
 
-import astropy
 import sphinx
 from distutils.version import LooseVersion
+
+try:
+    import astropy
+except ImportError:
+    ASTROPY_INSTALLED = False
+else:
+    ASTROPY_INSTALLED = True
 
 
 # -- General configuration ----------------------------------------------------
@@ -102,8 +108,8 @@ suppress_warnings = ['app.add_directive', ]
 # name. This can be overwritten or modified in packages and is provided here for
 # convenience.
 numpydoc_xref_ignore = {
-    'type', 'optional', 'default', 'or', 'of', 'method', 'instance', "like",
-    "class", 'subclass', "keyword-only", "default", "thereof"
+    "type", "optional", "default", "or", "of", "method", "instance",
+    "class", "subclass", "keyword-only", "default", "thereof",
 }
 
 # Mappings to fully qualified paths (or correct ReST references) for the
@@ -120,14 +126,11 @@ numpydoc_xref_aliases = {
 # Aliases to Astropy's glossary. In packages these can be turned on with
 # ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_glossary)``
 # (if astropy is in the intersphinx mapping).
-numpydoc_xref_aliases_astropy_glossary = {}  # works even if older astropy
-if float(astropy.__version__[:3]) >= 4.3:
+numpydoc_xref_aliases_astropy_glossary = {}  # works even if older Astropy
+if ASTROPY_INSTALLED and float(astropy.__version__[:3]) >= 4.3:
     numpydoc_xref_aliases_astropy_glossary = {
         # general
         "-like": ":term:`astropy:-like`",
-        # "number": ":term:`number`",
-        # "writable": ":term:`writable file-like object`",
-        # "readable": ":term:`readable file-like object`",
         # coordinates
         "angle-like": ":term:`astropy:angle-like`",
         "coordinate-like": ":term:`astropy:coordinate-like`",
@@ -145,18 +148,14 @@ if float(astropy.__version__[:3]) >= 4.3:
 # ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_physical_type)``
 # (if astropy is in the intersphinx mapping).
 numpydoc_xref_aliases_astropy_physical_type = {}  # works even if older astropy
-if float(astropy.__version__[:3]) >= 4.3:
+if ASTROPY_INSTALLED and float(astropy.__version__[:3]) >= 4.3:
 
-    # TODO! refactor if #11678 is implemented
-    from astropy.units.physical import _units_and_physical_types
-    for _, ptypes in _units_and_physical_types:
-        ptypes = {ptypes} if isinstance(ptypes, str) else ptypes
-        for ptype in ptypes:
-            key = f"'{ptype}'"
-            val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed.
-            numpydoc_xref_aliases_astropy_physical_type[key] = val
+    from astropy.units.physical import _name_physical_mapping
+    for ptype in _name_physical_mapping.keys():
+        val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed
+        numpydoc_xref_aliases_astropy_physical_type[f"'{ptype}'"] = val
 
-    del ptypes, key, val, _units_and_physical_types
+    del ptype, val, _name_physical_mapping  # cleanup namespace
 
 
 # Convenient collection of all of astropy's options for numpydoc xref.
