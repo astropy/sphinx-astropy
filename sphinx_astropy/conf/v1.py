@@ -25,6 +25,8 @@ except ImportError:
 else:
     ASTROPY_INSTALLED = True
 
+    from astropy.utils import minversion
+
 
 # -- General configuration ----------------------------------------------------
 
@@ -107,10 +109,9 @@ suppress_warnings = ['app.add_directive', ]
 # parameter type descriptions that may be confused for classes of the same
 # name. This can be overwritten or modified in packages and is provided here for
 # convenience.
-numpydoc_xref_ignore = {
-    "type", "optional", "default", "or", "of", "method", "instance",
-    "class", "subclass", "keyword-only", "default", "thereof",
-}
+numpydoc_xref_ignore = {"or", "of", "thereof",
+                        "default", "optional", "keyword-only",
+                        "instance", "type", "class", "subclass", "method"}
 
 # Mappings to fully qualified paths (or correct ReST references) for the
 # aliases/shortcuts used when specifying the types of parameters.
@@ -126,8 +127,8 @@ numpydoc_xref_aliases = {
 # Aliases to Astropy's glossary. In packages these can be turned on with
 # ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_glossary)``
 # (if astropy is in the intersphinx mapping).
-numpydoc_xref_aliases_astropy_glossary = {}  # works even if older Astropy
-if ASTROPY_INSTALLED and float(astropy.__version__[:3]) >= 4.3:
+numpydoc_xref_aliases_astropy_glossary = {}  # works even if no Astropy
+if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
     numpydoc_xref_aliases_astropy_glossary = {
         # general
         "-like": ":term:`astropy:-like`",
@@ -147,8 +148,8 @@ if ASTROPY_INSTALLED and float(astropy.__version__[:3]) >= 4.3:
 # Aliases to Astropy's physical types. In packages these can be turned on with
 # ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_physical_type)``
 # (if astropy is in the intersphinx mapping).
-numpydoc_xref_aliases_astropy_physical_type = {}  # works even if older astropy
-if ASTROPY_INSTALLED and float(astropy.__version__[:3]) >= 4.3:
+numpydoc_xref_aliases_astropy_physical_type = {}  # works even if no astropy
+if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
 
     from astropy.units.physical import _name_physical_mapping
     for ptype in _name_physical_mapping.keys():
