@@ -11,11 +11,21 @@
 
 import os
 import warnings
+from collections import ChainMap
 
 from os import path
 
 import sphinx
 from distutils.version import LooseVersion
+
+try:
+    import astropy
+except ImportError:
+    ASTROPY_INSTALLED = False
+else:
+    ASTROPY_INSTALLED = True
+
+    from astropy.utils import minversion
 
 
 # -- General configuration ----------------------------------------------------
@@ -87,6 +97,76 @@ rst_epilog = """
 """
 
 suppress_warnings = ['app.add_directive', ]
+
+# -- NumpyDoc X-Ref ------------------------
+
+# Whether to create cross-references for the parameter types in the
+# Parameters, Other Parameters, Returns and Yields sections of the docstring.
+# Should be set = True in packages manually! included here as reference.
+# numpydoc_xref_param_type = False
+
+# Words not to cross-reference. Most likely, these are common words used in
+# parameter type descriptions that may be confused for classes of the same
+# name. This can be overwritten or modified in packages and is provided here for
+# convenience.
+numpydoc_xref_ignore = {"or", "of", "thereof",
+                        "default", "optional", "keyword-only",
+                        "instance", "type", "class", "subclass", "method"}
+
+# Mappings to fully qualified paths (or correct ReST references) for the
+# aliases/shortcuts used when specifying the types of parameters.
+# Numpy provides some defaults
+# https://github.com/numpy/numpydoc/blob/b352cd7635f2ea7748722f410a31f937d92545cc/numpydoc/xref.py#L62-L94
+numpydoc_xref_aliases = {
+    # Python terms
+    "function": ":term:`python:function`",
+    "iterator": ":term:`python:iterator`",
+    "mapping": ":term:`python:mapping`",
+}
+
+# Aliases to Astropy's glossary. In packages these can be turned on with
+# ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_glossary)``
+# (if astropy is in the intersphinx mapping).
+numpydoc_xref_aliases_astropy_glossary = {}  # works even if no Astropy
+if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
+    numpydoc_xref_aliases_astropy_glossary = {
+        # general
+        "-like": ":term:`astropy:-like`",
+        # coordinates
+        "angle-like": ":term:`astropy:angle-like`",
+        "coordinate-like": ":term:`astropy:coordinate-like`",
+        "frame-like": ":term:`astropy:frame-like`",
+        # units
+        "unit-like": ":term:`astropy:unit-like`",
+        "quantity-like": ":term:`astropy:quantity-like`",
+        # table
+        "table-like": ":term:`astropy:table-like`",
+        # time
+        "time-like": ":term:`astropy:time-like`",
+    }
+
+# Aliases to Astropy's physical types. In packages these can be turned on with
+# ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_physical_type)``
+# (if astropy is in the intersphinx mapping).
+numpydoc_xref_aliases_astropy_physical_type = {}  # works even if no astropy
+if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
+
+    from astropy.units.physical import _name_physical_mapping
+    for ptype in _name_physical_mapping.keys():
+        val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed
+        numpydoc_xref_aliases_astropy_physical_type[f"'{ptype}'"] = val
+
+    del ptype, val, _name_physical_mapping  # cleanup namespace
+
+
+# Convenient collection of all of astropy's options for numpydoc xref.
+# In packages all the astropy additions can be turned on with
+# ``numpydoc_xref_aliases.update(numpydoc_xref_astropy_aliases)``
+# (if astropy is in the intersphinx mapping).
+numpydoc_xref_astropy_aliases = ChainMap(  # important at the top
+    numpydoc_xref_aliases_astropy_glossary,
+    numpydoc_xref_aliases_astropy_physical_type
+)
 
 # -- Project information ------------------------------------------------------
 
