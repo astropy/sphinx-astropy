@@ -4,7 +4,13 @@ Changes in sphinx-astropy
 1.4 (unreleased)
 ----------------
 
-- No changes yet
+- Updated intersphinx links. [#32, #36]
+
+- Removed LaTeX preamble section redefining warnings and notes. [#34]
+
+- Added support for numpydoc intersphinx xref. [#40]
+
+- Dropped support for Python 3.6. [#42]
 
 1.3 (2020-04-28)
 ----------------
