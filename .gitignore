@@ -49,3 +49,6 @@ htmlcov
 
 # PyCharm
 .idea
+
+sphinx_astropy/version.py
+pip-wheel-metadata/
