@@ -37,7 +37,7 @@ jobs:
         cd ..
         python -m venv testenv
         testenv/bin/pip install pytest sphinx-astropy/dist/*.whl
-        testenv/bin/pytest sphinx-astropy/tests
+        testenv/bin/pytest sphinx-astropy/sphinx_astropy
 
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
