@@ -1,7 +1,7 @@
 Changes in sphinx-astropy
 =========================
 
-1.4 (unreleased)
+1.4 (2021-06-22)
 ----------------
 
 - Updated intersphinx links. [#32, #36]
