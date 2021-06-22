@@ -40,8 +40,3 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `pillow <https://pillow.readthedocs.io/en/latest/>`_ - a package to deal with
   images, used by some examples in the astropy core documentation.
-
-|CircleCI Status|
-
-.. |CircleCI Status| image:: https://circleci.com/gh/astropy/sphinx-astropy.svg?style=svg
-   :target: https://circleci.com/gh/astropy/sphinx-astropy
