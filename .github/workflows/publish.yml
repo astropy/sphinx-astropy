@@ -10,7 +10,6 @@ jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
-    if: github.repository == 'astropy/pytest-doctestplus'
     if: (github.repository == 'astropy/sphinx-astropy' && (github.event_name == 'tags' || contains(github.event.pull_request.labels.*.name, 'Build wheels')))
 
     steps:
@@ -38,7 +37,7 @@ jobs:
         cd ..
         python -m venv testenv
         testenv/bin/pip install pytest sphinx-astropy/dist/*.whl
-        testenv/bin/pytest sphinx-astropy/tests
+        testenv/bin/pytest sphinx-astropy/sphinx_astropy
 
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')

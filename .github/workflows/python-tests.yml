@@ -19,28 +19,28 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: 3.7
-            toxenv: py36-test-sphinx17
+            toxenv: py37-test-sphinx17
           - os: windows-latest
             python-version: 3.7
-            toxenv: py36-test-sphinx18
+            toxenv: py37-test-sphinx18
           - os: macos-latest
             python-version: 3.7
             toxenv: py37-test-sphinx20
           - os: ubuntu-latest
             python-version: 3.8
-            toxenv: py37-test-sphinx24
+            toxenv: py38-test-sphinx24
           - os: windows-latest
             python-version: 3.8
             toxenv: py38-test-sphinx30
           - os: ubuntu-latest
             python-version: 3.9
-            toxenv: py38-test-sphinx35
+            toxenv: py39-test-sphinx35
           - os: ubuntu-latest
             python-version: 3.9
             toxenv: py39-test-sphinx40
           - os: macos-latest
             python-version: 3.9
-            toxenv: py38-test-sphinxdev
+            toxenv: py39-test-sphinxdev
 
     steps:
     - uses: actions/checkout@v2
