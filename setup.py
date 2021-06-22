@@ -5,6 +5,4 @@
 import os
 from setuptools import setup
 
-setup(
-    use_scm_version={'write_to': os.path.join('sphinx_astropy', 'version.py')}
-)
+setup(use_scm_version={'write_to': os.path.join('sphinx_astropy', 'version.py')})
