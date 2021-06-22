@@ -7,12 +7,9 @@ GitHub issues.
 from __future__ import print_function
 
 import re
-from distutils.version import LooseVersion
 from docutils.nodes import Text, reference
 
-from sphinx import __version__
-
-BLOCK_PATTERN = re.compile('\[#.+\]', flags=re.DOTALL)
+BLOCK_PATTERN = re.compile(r'\[#.+\]', flags=re.DOTALL)
 ISSUE_PATTERN = re.compile('#[0-9]+')
 
 
