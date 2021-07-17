@@ -210,11 +210,20 @@ extensions = [
     'numpydoc',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
-    'sphinx_astropy.ext.doctest',
     'sphinx_astropy.ext.changelog_links',
     'sphinx_astropy.ext.generate_config',
     'sphinx_astropy.ext.missing_static',
     'sphinx.ext.mathjax']
+
+try:
+    # Do this while in deprecation
+    import pytest_doctestplus.sphinx.doctestplus
+    extensions += ['pytest_doctestplus.sphinx.doctestplus']
+except ImportError:
+    warnings.warn("sphinx_astropy.ext.doctest has been deprecated "
+                  "use the doctestplus extensions from pytest-doctestplus: "
+                  "pytest_doctestplus.sphinx.doctestplus.",DeprecationWarning)
+    extensions += ['sphinx_astropy.ext.doctest']
 
 try:
     import matplotlib.sphinxext.plot_directive
