@@ -18,8 +18,6 @@ from os import path
 import sphinx
 from distutils.version import LooseVersion
 
-import pytest_doctestplus.sphinx.doctestplus
-
 try:
     import astropy
 except ImportError:
