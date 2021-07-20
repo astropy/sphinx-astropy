@@ -40,3 +40,5 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `pillow <https://pillow.readthedocs.io/en/latest/>`_ - a package to deal with
   images, used by some examples in the astropy core documentation.
+
+* `pytest-doctestplus <https://github.com/astropy/pytest-doctestplus/>`_ - providing the 'doctestplus' extension to skip code snippets in narrative documentation.
