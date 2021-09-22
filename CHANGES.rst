@@ -1,7 +1,7 @@
 Changes in sphinx-astropy
 =========================
 
-1.6 (unreleased)
+1.6 (2021-09-22)
 ----------------
 
 - Updated minimum required version of ``pytest-doctestplus`` to 0.11. [#47]
