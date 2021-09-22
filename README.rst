@@ -1,6 +1,13 @@
-
 About
 =====
+
+.. image:: https://zenodo.org/badge/119399685.svg
+   :target: https://zenodo.org/badge/latestdoi/119399685
+   :alt: Zenodo DOI
+
+.. image:: https://github.com/astropy/sphinx-astropy/actions/workflows/python-tests.yml/badge.svg
+   :target: https://github.com/astropy/sphinx-astropy/actions/workflows/python-tests.yml
+   :alt: CI Status
 
 This package serves two purposes: it provides a default Sphinx configuration and set of extensions specific to the Astropy project, and it acts as a meta-package by installing all required Sphinx extensions for the core Astropy package and other packages.
 
