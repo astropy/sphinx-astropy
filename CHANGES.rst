@@ -1,6 +1,9 @@
 Changes in sphinx-astropy
 =========================
 
+1.7 (unreleased)
+----------------
+
 1.6 (2021-09-22)
 ----------------
 
@@ -11,7 +14,6 @@ Changes in sphinx-astropy
 
 - ``doctest`` sphinx extension has been moved to ``pytest-doctestplus`` and
   therefore ``pytest-doctestplus`` is now a required dependency. [#45]
-
 
 1.4 (2021-06-22)
 ----------------
