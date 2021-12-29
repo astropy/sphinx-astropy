@@ -4,6 +4,9 @@ Changes in sphinx-astropy
 1.7 (unreleased)
 ----------------
 
+- Removed dependency on ``distutils``. As a result, ``packaging`` is now
+  a dependency. [#51]
+
 1.6 (2021-09-22)
 ----------------
 

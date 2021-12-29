@@ -16,7 +16,7 @@ from collections import ChainMap
 from os import path
 
 import sphinx
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 try:
     import astropy
@@ -41,8 +41,8 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 
 def check_sphinx_version(expected_version):
-    sphinx_version = LooseVersion(sphinx.__version__)
-    expected_version = LooseVersion(expected_version)
+    sphinx_version = Version(sphinx.__version__)
+    expected_version = Version(expected_version)
     if sphinx_version < expected_version:
         raise RuntimeError(
             "At least Sphinx version {0} is required to build this "

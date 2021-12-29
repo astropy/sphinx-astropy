@@ -9,14 +9,11 @@ you can build documentation with::
 
 This is used e.g. by astropy-helpers when using the build_docs command.
 """
-
-from __future__ import print_function
-
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from sphinx import __version__
 
-SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
+SPHINX_LT_18 = Version(__version__) < Version('1.8')
 
 
 def disable_intersphinx(app, config=None):
