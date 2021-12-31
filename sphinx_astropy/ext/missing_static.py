@@ -4,15 +4,12 @@
 The purpose of this extension is to give a clear warning if sphinx is expecting
 a static directory to be present but it isn't.
 """
-
-from __future__ import print_function
-
 import os
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from sphinx import __version__
 
-SPHINX_LT_18 = LooseVersion(__version__) < LooseVersion('1.8')
+SPHINX_LT_18 = Version(__version__) < Version('1.8')
 
 
 WARNING_TEMPLATE = """

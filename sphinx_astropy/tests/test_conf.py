@@ -1,22 +1,4 @@
-from distutils.version import LooseVersion
-
-from sphinx import __version__
-
-SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
-
-if SPHINX_LT_17:
-
-    from sphinx import build_main as build_main_original
-
-    # As of Sphinx 1.7, the first argument is now no longer ignored, so we
-    # construct a wrapper for older versions.
-
-    def build_main(argv=None):
-        argv.insert(0, 'sphinx-build')
-        return build_main_original(argv=argv)
-
-else:
-    from sphinx.cmd.build import build_main
+from sphinx.cmd.build import build_main
 
 BASIC_CONF = """
 from sphinx_astropy.conf import *
