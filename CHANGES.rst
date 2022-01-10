@@ -7,6 +7,8 @@ Changes in sphinx-astropy
 - Removed dependency on ``distutils``. As a result, ``packaging`` is now
   a dependency. [#51]
 
+- Updated ``matplotlib`` URL for intersphinx. [#52]
+
 1.6 (2021-09-22)
 ----------------
 
