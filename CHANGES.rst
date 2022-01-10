@@ -1,7 +1,7 @@
 Changes in sphinx-astropy
 =========================
 
-1.7 (unreleased)
+1.7 (2022-01-10)
 ----------------
 
 - Removed dependency on ``distutils``. As a result, ``packaging`` is now
