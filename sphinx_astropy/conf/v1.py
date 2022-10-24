@@ -59,7 +59,7 @@ intersphinx_mapping = {
                                          'local', 'python3_local_links.inv'))),
     'numpy': ('https://numpy.org/doc/stable/',
               (None, 'http://data.astropy.org/intersphinx/numpy.inv')),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/',
+    'scipy': ('https://docs.scipy.org/doc/scipy/',
               (None, 'http://data.astropy.org/intersphinx/scipy.inv')),
     'matplotlib': ('https://matplotlib.org/stable/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
