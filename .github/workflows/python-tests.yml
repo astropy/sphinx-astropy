@@ -22,7 +22,7 @@ jobs:
             toxenv: py38-test-sphinx30
           - os: ubuntu-latest
             python-version: 3.8
-            toxenv: py39-test-sphinx35
+            toxenv: py38-test-sphinx35
           - os: ubuntu-latest
             python-version: 3.9
             toxenv: py39-test-sphinx40
