@@ -1,8 +1,12 @@
 Changes in sphinx-astropy
 =========================
 
-1.8 (unreleased)
+1.8 (2023-01-06)
 ----------------
+
+- Update scipy intersphinx URL. [#53]
+
+- Ensure that jQuery is always installed with Sphinx 6+. [#56]
 
 1.7 (2022-01-10)
 ----------------
