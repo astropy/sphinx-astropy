@@ -4,8 +4,6 @@ This sphinx extension makes the issue numbers in the changelog into links to
 GitHub issues.
 """
 
-from __future__ import print_function
-
 import re
 from docutils.nodes import Text, reference
 

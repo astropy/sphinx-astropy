@@ -5,12 +5,7 @@ The purpose of this extension is to give a clear warning if sphinx is expecting
 a static directory to be present but it isn't.
 """
 import os
-from packaging.version import Version
-
-from sphinx import __version__
-
-SPHINX_LT_18 = Version(__version__) < Version('1.8')
-
+from sphinx.util import logging
 
 WARNING_TEMPLATE = """
 Note: The static directory '{0}' was not found. This is often because it is
@@ -22,8 +17,6 @@ Note: The static directory '{0}' was not found. This is often because it is
 
 
 def static_warning(app, config=None):
-
-    from sphinx.util import logging
     info = logging.getLogger(__name__).info
 
     for directory in app.config.html_static_path:
@@ -32,7 +25,6 @@ def static_warning(app, config=None):
 
 
 def setup(app):
-
     app.connect('build-finished', static_warning)
 
     return {'parallel_read_safe': True,

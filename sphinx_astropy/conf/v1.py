@@ -15,6 +15,7 @@ from collections import ChainMap
 
 from os import path
 
+import astropy_sphinx_theme
 import sphinx
 from packaging.version import Version
 
@@ -34,7 +35,7 @@ else:
 # minor parts of the version number, not the micro.  To do a more
 # specific version check, call check_sphinx_version("x.y.z.") from
 # your project's conf.py
-needs_sphinx = '1.7'
+needs_sphinx = '3.0'
 
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -64,7 +65,8 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org/stable/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
     'astropy': ('https://docs.astropy.org/en/stable/', None),
-    'h5py': ('https://docs.h5py.org/en/stable/', None)}
+    'h5py': ('https://docs.h5py.org/en/stable/', None),
+}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -270,7 +272,6 @@ html_sidebars = {
 # pixels large.
 
 # We include by default the favicon that is in the bootstrap-astropy theme.
-import astropy_sphinx_theme
 html_theme_path = astropy_sphinx_theme.get_html_theme_path()
 html_favicon = os.path.join(html_theme_path[0], html_theme, 'static', 'astropy_logo.ico')
 
