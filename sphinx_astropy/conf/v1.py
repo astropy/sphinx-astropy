@@ -12,12 +12,9 @@
 import os
 import warnings
 from collections import ChainMap
-
 from os import path
 
 import astropy_sphinx_theme
-import sphinx
-from packaging.version import Version
 
 try:
     import astropy
@@ -42,14 +39,8 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 
 def check_sphinx_version(expected_version):
-    sphinx_version = Version(sphinx.__version__)
-    expected_version = Version(expected_version)
-    if sphinx_version < expected_version:
-        raise RuntimeError(
-            "At least Sphinx version {0} is required to build this "
-            "documentation.  Found {1}.".format(
-                expected_version, sphinx_version))
-
+    warnings.warn("check_sphinx_version is deprecated, use needs_sphinx instead",
+                  DeprecationWarning)
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
