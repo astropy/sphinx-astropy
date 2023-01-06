@@ -192,22 +192,24 @@ numpydoc_xref_astropy_aliases = ChainMap(  # important at the top
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx_astropy.ext.intersphinx_toggle',
-              'sphinx.ext.autodoc',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.todo',
-              'sphinx.ext.coverage',
-              'sphinx.ext.inheritance_diagram',
-              'sphinx.ext.viewcode',
-              'sphinxcontrib.jquery',
-              'numpydoc',
-              'sphinx_automodapi.automodapi',
-              'sphinx_automodapi.smart_resolver',
-              'sphinx_astropy.ext.changelog_links',
-              'sphinx_astropy.ext.generate_config',
-              'sphinx_astropy.ext.missing_static',
-              'sphinx.ext.mathjax',
-              'pytest_doctestplus.sphinx.doctestplus']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.jquery',
+    'numpydoc',
+    'pytest_doctestplus.sphinx.doctestplus',
+    'sphinx_astropy.ext.changelog_links',
+    'sphinx_astropy.ext.generate_config',
+    'sphinx_astropy.ext.intersphinx_toggle',
+    'sphinx_astropy.ext.missing_static',
+    'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver',
+]
 
 try:
     import matplotlib.sphinxext.plot_directive
@@ -241,7 +243,7 @@ graphviz_dot_args = [
     '-Efontsize=10',
     '-Efontname=Helvetica Neue, Helvetica, Arial, sans-serif',
     '-Gfontsize=10',
-    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif'
+    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
 ]
 
 # -- Options for HTML output -------------------------------------------------
