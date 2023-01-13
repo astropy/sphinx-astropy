@@ -12,11 +12,9 @@
 import os
 import warnings
 from collections import ChainMap
-
 from os import path
 
-import sphinx
-from packaging.version import Version
+import astropy_sphinx_theme
 
 try:
     import astropy
@@ -34,21 +32,15 @@ else:
 # minor parts of the version number, not the micro.  To do a more
 # specific version check, call check_sphinx_version("x.y.z.") from
 # your project's conf.py
-needs_sphinx = '1.7'
+needs_sphinx = '3.0'
 
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 
 def check_sphinx_version(expected_version):
-    sphinx_version = Version(sphinx.__version__)
-    expected_version = Version(expected_version)
-    if sphinx_version < expected_version:
-        raise RuntimeError(
-            "At least Sphinx version {0} is required to build this "
-            "documentation.  Found {1}.".format(
-                expected_version, sphinx_version))
-
+    warnings.warn("check_sphinx_version is deprecated, use needs_sphinx instead",
+                  DeprecationWarning)
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
@@ -64,7 +56,8 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org/stable/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
     'astropy': ('https://docs.astropy.org/en/stable/', None),
-    'h5py': ('https://docs.h5py.org/en/stable/', None)}
+    'h5py': ('https://docs.h5py.org/en/stable/', None),
+}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -199,22 +192,24 @@ numpydoc_xref_astropy_aliases = ChainMap(  # important at the top
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx_astropy.ext.intersphinx_toggle',
-              'sphinx.ext.autodoc',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.todo',
-              'sphinx.ext.coverage',
-              'sphinx.ext.inheritance_diagram',
-              'sphinx.ext.viewcode',
-              'sphinxcontrib.jquery',
-              'numpydoc',
-              'sphinx_automodapi.automodapi',
-              'sphinx_automodapi.smart_resolver',
-              'sphinx_astropy.ext.changelog_links',
-              'sphinx_astropy.ext.generate_config',
-              'sphinx_astropy.ext.missing_static',
-              'sphinx.ext.mathjax',
-              'pytest_doctestplus.sphinx.doctestplus']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.jquery',
+    'numpydoc',
+    'pytest_doctestplus.sphinx.doctestplus',
+    'sphinx_astropy.ext.changelog_links',
+    'sphinx_astropy.ext.generate_config',
+    'sphinx_astropy.ext.intersphinx_toggle',
+    'sphinx_astropy.ext.missing_static',
+    'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver',
+]
 
 try:
     import matplotlib.sphinxext.plot_directive
@@ -248,7 +243,7 @@ graphviz_dot_args = [
     '-Efontsize=10',
     '-Efontname=Helvetica Neue, Helvetica, Arial, sans-serif',
     '-Gfontsize=10',
-    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif'
+    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
 ]
 
 # -- Options for HTML output -------------------------------------------------
@@ -270,7 +265,6 @@ html_sidebars = {
 # pixels large.
 
 # We include by default the favicon that is in the bootstrap-astropy theme.
-import astropy_sphinx_theme
 html_theme_path = astropy_sphinx_theme.get_html_theme_path()
 html_favicon = os.path.join(html_theme_path[0], html_theme, 'static', 'astropy_logo.ico')
 
