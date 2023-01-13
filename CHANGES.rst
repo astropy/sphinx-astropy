@@ -4,6 +4,10 @@ Changes in sphinx-astropy
 1.9 (unreleased)
 ----------------
 
+- Update minimum required version of Sphinx to 3.0.0. [#57]
+
+- ``check_sphinx_version`` is deprecated. [#57]
+
 1.8 (2023-01-06)
 ----------------
 
