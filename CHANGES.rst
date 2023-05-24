@@ -4,6 +4,10 @@ Changes in sphinx-astropy
 1.9 (unreleased)
 ----------------
 
+- To switch to ``pydata-sphinx-theme``, use ``sphinx_astropy.conf.v2``.
+  If you still want ``v1``, you have to install ``astropy-sphinx-theme``
+  separately. [#59]
+
 - Update minimum required version of Sphinx to 3.0.0. [#57]
 
 - ``check_sphinx_version`` is deprecated. [#57]

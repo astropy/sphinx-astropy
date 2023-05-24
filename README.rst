@@ -37,7 +37,9 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `Sphinx <http://www.sphinx-doc.org>`_
 
-* `astropy-sphinx-theme <https://github.com/astropy/astropy-sphinx-theme>`_ - the default 'bootstrap' theme use by Astropy and a number of affilited packages.
+* `pydata-sphinx-theme <https://github.com/pydata/pydata-sphinx-theme/>`_ - a clean, three-column, Bootstrap-based Sphinx theme by and for the `PyData community <https://pydata.org/>`_.
+
+* `sphinx-copybutton <https://github.com/executablebooks/sphinx-copybutton>`_ - a small Sphinx extension to add a "copy" button to code blocks.
 
 * `sphinx-automodapi <http://sphinx-automodapi.readthedocs.io>`_ - an extension that makes it easy to automatically generate API documentation.
 
