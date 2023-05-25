@@ -211,8 +211,8 @@ extensions = [
 ]
 
 try:
-    import matplotlib.sphinxext.plot_directive
-    extensions += [matplotlib.sphinxext.plot_directive.__name__]
+    import matplotlib.sphinxext.plot_directive  # noqa: F401
+    extensions += ['matplotlib.sphinxext.plot_directive']
 # AttributeError is checked here in case matplotlib is installed but
 # Sphinx isn't.  Note that this module is imported by the config file
 # generator, even if we're not building the docs.
@@ -245,27 +245,19 @@ graphviz_dot_args = [
     '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
 ]
 
+# For sphinx-copybutton
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'pydata_sphinx_theme'
 
-# FIXME: Have to figure this out if we want left nav on main page only.
-# Custom sidebar templates, maps document names to template names.
-#
-# Also need this _static/custom.css to remove bullet points:
-#    .sidebar-primary-item > ul > li.toctree-l1 {
-#        display: inline;
-#        font-size: larger;
-#    }
-#
-#html_static_path = ["_static"]
-#html_css_files = ["custom.css"]
 html_sidebars = {
     "index": ["globaltoc.html"]
 }
-#globaltoc_maxdepth = -1  # FIXME: this isn't working, not sure why
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -282,7 +274,9 @@ html_theme_options = {
     "collapse_navigation": True,
     "icon_links": [],
     "navigation_depth": 2,
-    "show_nav_level": 1,  # FIXME: Need separate RST pages with toctree within.
+    "show_nav_level": 2,
+    "globaltoc_collapse": False,
+    "globaltoc_maxdepth": 2,
     "use_edit_page_button": False
 }
 
