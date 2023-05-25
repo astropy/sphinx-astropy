@@ -8,7 +8,7 @@
 #
 # or:
 #
-#     from sphinx_astropy.conf.v2 import *
+#     from sphinx_astropy.conf.v1 import *
 #
 # with the latter being the option to use for stability. The idea is that
 # we can still make small changes (mainly fixing bugs) to v1.py, but if we
@@ -17,4 +17,5 @@
 # v2.py file (either starting from a copy of v1.py or starting from
 # scratch), and change the import below to 'from .v2 import *'.
 
-from .v2 import *
+# TODO: Switch default to v2
+from .v1 import *  # noqa: F401, F403

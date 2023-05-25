@@ -27,18 +27,10 @@ else:
 # -- General configuration ----------------------------------------------------
 
 # The version check in Sphinx itself can only compare the major and
-# minor parts of the version number, not the micro.  To do a more
-# specific version check, call check_sphinx_version("x.y.z.") from
-# your project's conf.py
-needs_sphinx = '3.0'
-
+# minor parts of the version number, not the micro.
+needs_sphinx = '4.2'
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-
-def check_sphinx_version(expected_version):
-    warnings.warn("check_sphinx_version is deprecated, use needs_sphinx instead",
-                  DeprecationWarning)
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {

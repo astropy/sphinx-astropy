@@ -37,9 +37,7 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `Sphinx <http://www.sphinx-doc.org>`_
 
-* `pydata-sphinx-theme <https://github.com/pydata/pydata-sphinx-theme/>`_ - a clean, three-column, Bootstrap-based Sphinx theme by and for the `PyData community <https://pydata.org/>`_.
-
-* `sphinx-copybutton <https://github.com/executablebooks/sphinx-copybutton>`_ - a small Sphinx extension to add a "copy" button to code blocks.
+* `astropy-sphinx-theme <https://github.com/astropy/astropy-sphinx-theme>`_ - the default 'bootstrap' theme use by Astropy and a number of affiliated packages. This goes with `sphinx_astropy.conf.v1`.
 
 * `sphinx-automodapi <http://sphinx-automodapi.readthedocs.io>`_ - an extension that makes it easy to automatically generate API documentation.
 
@@ -51,3 +49,19 @@ Installing **sphinx-astropy** will automatically install (if not already present
   images, used by some examples in the astropy core documentation.
 
 * `pytest-doctestplus <https://github.com/astropy/pytest-doctestplus/>`_ - providing the 'doctestplus' extension to skip code snippets in narrative documentation.
+
+pydata-sphinx-theme (v2)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use the new `pydata-sphinx-theme` with `sphinx_astropy.conf.v2`, you have to install
+the optional `[v2]` dependencies::
+
+    pip install sphinx-astropy[v2]
+
+That would pull in the following as well:
+
+* `pydata-sphinx-theme <https://github.com/pydata/pydata-sphinx-theme/>`_ - a clean, three-column,
+  Bootstrap-based Sphinx theme by and for the `PyData community <https://pydata.org/>`_.
+
+* `sphinx-copybutton <https://github.com/executablebooks/sphinx-copybutton>`_ - a small Sphinx
+  extension to add a "copy" button to code blocks.
