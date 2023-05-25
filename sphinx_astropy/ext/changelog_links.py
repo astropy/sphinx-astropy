@@ -26,7 +26,7 @@ def process_changelog_links(app, doctree, docname):
 
     for item in doctree.traverse():
 
-        if not isinstance(item, Text):
+        if not isinstance(item, Text) or item.parent is None:
             continue
 
         # We build a new list of items to replace the current item. If
