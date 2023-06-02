@@ -247,10 +247,6 @@ copybutton_prompt_is_regexp = True
 # a list of builtin themes.
 html_theme = 'pydata_sphinx_theme'
 
-html_sidebars = {
-    "index": ["globaltoc.html"]
-}
-
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
@@ -267,8 +263,6 @@ html_theme_options = {
     "icon_links": [],
     "navigation_depth": 2,
     "show_nav_level": 2,
-    "globaltoc_collapse": False,
-    "globaltoc_maxdepth": 2,
     "use_edit_page_button": False
 }
 
