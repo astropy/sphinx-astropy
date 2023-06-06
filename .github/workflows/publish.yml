@@ -36,6 +36,7 @@ jobs:
       run: |
         cd ..
         python -m venv testenv
+        testenv/bin/pip install pip -U
         testenv/bin/pip install pytest sphinx-astropy/dist/*.whl
         testenv/bin/pytest sphinx-astropy/sphinx_astropy
 
