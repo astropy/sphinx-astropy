@@ -17,4 +17,5 @@
 # v2.py file (either starting from a copy of v1.py or starting from
 # scratch), and change the import below to 'from .v2 import *'.
 
-from .v1 import *
+# TODO: Switch default to v2
+from .v1 import *  # noqa: F401, F403
