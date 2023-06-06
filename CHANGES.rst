@@ -1,7 +1,7 @@
 Changes in sphinx-astropy
 =========================
 
-1.9 (unreleased)
+1.9 (2023-06-06)
 ----------------
 
 - To switch to ``pydata-sphinx-theme``, use ``sphinx_astropy.conf.v2``
