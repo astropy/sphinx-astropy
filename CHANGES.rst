@@ -1,8 +1,11 @@
 Changes in sphinx-astropy
 =========================
 
-2.0 (unreleased)
-----------------
+1.9.1 (2023-06-07)
+------------------
+
+- Renamed ``[v2]`` optional dependencies key to ``[confv2]``
+  to avoid triggering build error in Python 3.10 or earlier. [#63]
 
 1.9 (2023-06-06)
 ----------------
