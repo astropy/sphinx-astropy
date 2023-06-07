@@ -50,13 +50,13 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `pytest-doctestplus <https://github.com/astropy/pytest-doctestplus/>`_ - providing the 'doctestplus' extension to skip code snippets in narrative documentation.
 
-pydata-sphinx-theme (v2)
-^^^^^^^^^^^^^^^^^^^^^^^^
+pydata-sphinx-theme (confv2)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use the new `pydata-sphinx-theme` with `sphinx_astropy.conf.v2`, you have to install
-the optional `[v2]` dependencies::
+the optional `[confv2]` dependencies::
 
-    pip install sphinx-astropy[v2]
+    pip install sphinx-astropy[confv2]
 
 That would pull in the following as well:
 
