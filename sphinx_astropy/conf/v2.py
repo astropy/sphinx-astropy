@@ -184,6 +184,7 @@ numpydoc_xref_astropy_aliases = ChainMap(  # important at the top
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    "sphinx.ext.autosectionlabel",
     'sphinx.ext.coverage',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.intersphinx',
@@ -216,6 +217,8 @@ except (ImportError, AttributeError):
 # Don't show summaries of the members in each class along with the
 # class' docstring
 numpydoc_show_class_members = False
+
+autosectionlabel_prefix_document = True
 
 autosummary_generate = True
 
