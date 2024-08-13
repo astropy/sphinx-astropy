@@ -35,16 +35,19 @@ jobs:
           - os: ubuntu-latest
             python-version: "3.11"
             toxenv: py311-test-v2deps-sphinx70
+          - os: ubuntu-latest
+            python-version: "3.12"
+            toxenv: py312-test-sphinx80
           - os: macos-latest
             python-version: "3.11"
             toxenv: py311-test-sphinxdev
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Tox
