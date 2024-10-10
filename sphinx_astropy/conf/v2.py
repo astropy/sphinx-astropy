@@ -209,7 +209,7 @@ try:
 # generator, even if we're not building the docs.
 # We don't need to raise a warning or exception here as there are packages
 # that don't use the directive, and those who try to use it without mpl being
-# installed will get a nice "Unknonw directive type" error at usage.
+# installed will get a nice "Unknown directive type" error at usage.
 except (ImportError, AttributeError):
     pass
 
