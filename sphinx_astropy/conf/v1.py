@@ -217,10 +217,11 @@ try:
 # AttributeError is checked here in case matplotlib is installed but
 # Sphinx isn't.  Note that this module is imported by the config file
 # generator, even if we're not building the docs.
+# We don't need to raise a warning or exception here as there are packages
+# that don't use the directive, and those who try to use it without mpl being
+# installed will get a nice "Unknonw directive type" error at usage.
 except (ImportError, AttributeError):
-    warnings.warn(
-        "matplotlib's plot_directive could not be imported. " +
-        "Inline plots will not be included in the output")
+    pass
 
 # Don't show summaries of the members in each class along with the
 # class' docstring
