@@ -13,6 +13,9 @@ import os
 from collections import ChainMap
 from os import path
 
+import sphinx
+from packaging.version import Version
+
 try:
     import astropy
 except ImportError:
@@ -28,6 +31,7 @@ else:
 # The version check in Sphinx itself can only compare the major and
 # minor parts of the version number, not the micro.
 needs_sphinx = '4.2'
+SPHINX_LT_8_2 = Version(sphinx.__version__) < Version("8.2.dev")
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -228,14 +232,17 @@ autoclass_content = "both"
 # Render inheritance diagrams in SVG
 graphviz_output_format = "svg"
 
-graphviz_dot_args = [
+graphviz_dot_args = (
     '-Nfontsize=10',
     '-Nfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
     '-Efontsize=10',
     '-Efontname=Helvetica Neue, Helvetica, Arial, sans-serif',
     '-Gfontsize=10',
     '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
-]
+)
+
+if SPHINX_LT_8_2:
+    graphviz_dot_args = list(graphviz_dot_args)
 
 # For sphinx-copybutton
 copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
