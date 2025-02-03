@@ -4,6 +4,9 @@ Changes in sphinx-astropy
 2.0 (unreleased)
 ----------------
 
+- Update minimum required version of Sphinx to 4.0.0
+  and Python to 3.9. [#78]
+
 1.9.1 (2023-06-07)
 ------------------
 
