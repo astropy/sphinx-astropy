@@ -15,6 +15,8 @@ from collections import ChainMap
 from os import path
 
 import astropy_sphinx_theme
+import sphinx
+from packaging.version import Version
 
 try:
     import astropy
@@ -33,7 +35,7 @@ else:
 # specific version check, call check_sphinx_version("x.y.z.") from
 # your project's conf.py
 needs_sphinx = '3.0'
-
+SPHINX_LT_8_2 = Version(sphinx.__version__) < Version("8.2.dev")
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -246,6 +248,9 @@ graphviz_dot_args = (
     '-Gfontsize=10',
     '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
 )
+
+if SPHINX_LT_8_2:
+    graphviz_dot_args = list(graphviz_dot_args)
 
 # -- Options for HTML output -------------------------------------------------
 
