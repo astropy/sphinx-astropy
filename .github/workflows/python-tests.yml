@@ -49,6 +49,10 @@ jobs:
             python-version: "3.12"
             toxenv: py312-test-sphinx81
 
+          - os: ubuntu-latest
+            python-version: "3.13"
+            toxenv: py312-test-sphinx82
+
           - os: macos-latest
             python-version: "3.13"
             toxenv: py313-test-v2deps-sphinxdev
