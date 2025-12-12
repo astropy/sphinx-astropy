@@ -1,0 +1,43 @@
+name: rc-testing
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly Monday 10AM build
+    - cron: '0 10 * * 1'
+  # REMOVE ME BEFORE MERGE
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python-version: "3.13"
+            toxenv: py313-test-predeps
+
+          - os: macos-latest
+            python-version: "3.13"
+            toxenv: py313-test-v2deps-predeps
+    steps:
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+      with:
+        fetch-depth: 0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c  # v6.0.0
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Tox
+      run: python -m pip install tox
+    - name: Run Tox
+      run: tox -v -e ${{ matrix.toxenv }}
