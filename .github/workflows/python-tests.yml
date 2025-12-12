@@ -51,7 +51,7 @@ jobs:
 
           - os: ubuntu-latest
             python-version: "3.13"
-            toxenv: py312-test-sphinx82
+            toxenv: py313-test-sphinx82
 
           - os: macos-latest
             python-version: "3.13"
