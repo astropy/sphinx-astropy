@@ -5,8 +5,6 @@ on:
   schedule:
     # Weekly Thursday 10AM build
     - cron: '0 10 * * 4'
-  # REMOVE ME BEFORE MERGE
-  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
