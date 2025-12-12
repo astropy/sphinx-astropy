@@ -3,8 +3,8 @@ name: rc-testing
 on:
   workflow_dispatch:
   schedule:
-    # Weekly Monday 10AM build
-    - cron: '0 10 * * 1'
+    # Weekly Thursday 10AM build
+    - cron: '0 10 * * 4'
   # REMOVE ME BEFORE MERGE
   pull_request:
 
