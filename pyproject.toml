@@ -37,6 +37,10 @@ confv2 = [
   "pydata-sphinx-theme",
   "sphinx-copybutton",
 ]
+confv3 = [
+  "sunpy-sphinx-theme",
+  "sphinx-copybutton",
+]
 all = ["astropy"]
 tests = ["pytest"]
 
