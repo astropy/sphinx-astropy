@@ -6,12 +6,17 @@
 #
 # v3 extends v2 to use the shared sunpy-sphinx-theme settings
 
-from .v2 import *  # noqa: F403
+from sphinx_astropy.conf.v2 import *  # noqa: F403
 
-html_theme = "sunpy"
+html_theme = "astropy"
 
 html_theme_options = {
+    # "sst_project_name": "Astropy",
     "sst_site_root": "https://astropy.org",
+    "logo": {
+        "image_light": "https://raw.githubusercontent.com/astropy/astropy-logo/refs/heads/main/astropy_logo_notext.svg",
+        "image_dark": "https://raw.githubusercontent.com/astropy/astropy-logo/refs/heads/main/astropy_logo_notext.svg",
+    },
     "navbar_links": [
         (
             "About",

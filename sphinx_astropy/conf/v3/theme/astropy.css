@@ -1,0 +1,12 @@
+:root {
+  /* SunPy Theme Colors */
+  /* If you add or change the names of these please update the docs */
+  --sst-accent-color-bright: #ff5000;
+  --sst-accent-color-muted: #f4debf;
+  --sst-dark-color: #404040;
+  --sst-darker-color: #333333;
+  --sst-darkest-color: #222222;
+  --sst-light-color: rgb(206, 206, 206);
+  --sst-lighter-color: rgb(231, 231, 231);
+  --sst-lightest-color: rgb(251, 251, 251);
+}

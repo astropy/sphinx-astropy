@@ -1,0 +1,5 @@
+[theme]
+inherit = sunpy
+
+[options]
+sst_project_name = Astropy
