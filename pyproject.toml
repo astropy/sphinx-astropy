@@ -1,8 +1,47 @@
 [build-system]
-requires = ["setuptools>=77.3.1",
-            "setuptools_scm>=8.0.0",
+requires = [
+  "setuptools>=77.3.1",
+  "setuptools_scm>=8.0.0",
 ]
 build-backend = 'setuptools.build_meta'
+
+[project]
+name = "sphinx-astropy"
+license = "BSD-3-Clause"
+license-files = ["LICENSE.rst"]
+authors = [{name = "The Astropy Developers", email = "astropy.team@gmail.com"}]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+description = "Sphinx extensions and configuration specific to the Astropy project"
+readme = {file = "README.rst", content-type = "text/x-rst"}
+requires-python = ">=3.9"
+dynamic = ["version"]
+dependencies = [
+  "astropy-sphinx-theme",
+  "numpydoc",
+  "packaging",
+  "pillow",
+  "pytest-doctestplus>=0.11",
+  "sphinx-automodapi",
+  "sphinx-gallery",
+  "sphinx>=4.0.0",
+  "sphinxcontrib-jquery",
+]
+
+[project.optional-dependencies]
+confv2 = [
+  "pydata-sphinx-theme",
+  "sphinx-copybutton",
+]
+all = ["astropy"]
+tests = ["pytest"]
+
+[tool.setuptools.package-data]
+"sphinx_astropy" = ["local/*"]
 
 [tool.setuptools_scm]
 version_file = "sphinx_astropy/version.py"
