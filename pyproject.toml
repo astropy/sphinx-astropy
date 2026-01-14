@@ -37,6 +37,10 @@ confv2 = [
   "pydata-sphinx-theme",
   "sphinx-copybutton",
 ]
+confv3 = [
+  "sunpy-sphinx-theme",
+  "sphinx-copybutton",
+]
 all = ["astropy"]
 tests = ["pytest"]
 
@@ -45,3 +49,6 @@ tests = ["pytest"]
 
 [tool.setuptools_scm]
 version_file = "sphinx_astropy/version.py"
+
+[project.entry-points."sphinx.html_themes"]
+astropy = "sphinx_astropy.conf.v3.theme"
