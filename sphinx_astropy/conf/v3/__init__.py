@@ -9,44 +9,4 @@
 from sphinx_astropy.conf.v2 import *  # noqa: F403
 
 html_theme = "astropy"
-
-html_theme_options = {
-    # "sst_project_name": "Astropy",
-    "sst_site_root": "https://astropy.org",
-    "logo": {
-        "image_light": "https://raw.githubusercontent.com/astropy/astropy-logo/refs/heads/main/astropy_logo_notext.svg",
-        "image_dark": "https://raw.githubusercontent.com/astropy/astropy-logo/refs/heads/main/astropy_logo_notext.svg",
-    },
-    "navbar_links": [
-        (
-            "About",
-            [
-                ("About Astropy", "about.html", 2),
-                ("Code of Conduct", "code_of_conduct.html", 2),
-                ("Acknowledging & Citing", "acknowledging.html", 2),
-                ("History", "history.html", 2),
-            ],
-        ),
-        (
-            "Documentation",
-            [
-                # core first
-                ("astropy", "https://docs.astropy.org", 3),
-                # Coordinated
-                ("asdf-astropy", "https://asdf-astropy.readthedocs.io", 3),
-                ("astropy-healpix", "https://astropy-healpix.readthedocs.io", 3),
-                ("astroquery", "https://astroquery.readthedocs.io", 3),
-                ("ccdproc", "https://ccdproc.readthedocs.io", 3),
-                ("photutils", "https://photutils.readthedocs.io", 3),
-                ("regions", "https://astropy-regions.readthedocs.io", 3),
-                ("reproject", "https://reproject.readthedocs.io", 3),
-                ("specreduce", "https://specreduce.readthedocs.io", 3),
-                ("specutils", "https://specutils.readthedocs.io", 3),
-            ],
-        ),
-        ("Get Help", "help.html", 2),
-        ("Contribute", "contribute.html", 2),
-        ("Affiliated Packages", "affiliated/index.html", 2),
-        ("Team", "team.html", 2),
-    ],
-}
+html_logo = "https://raw.githubusercontent.com/astropy/astropy-logo/refs/heads/main/astropy_logo_notext.svg"
