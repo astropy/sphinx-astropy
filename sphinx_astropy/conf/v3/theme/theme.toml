@@ -32,3 +32,4 @@ navbar_links = [
     ["Affiliated Packages", "affiliated/index.html", 2],
     ["Team", "team.html", 2],
 ]
+rtd_extra_search_projects = [["astropy-org-test", "https://astropy-org-test.readthedocs.io"]]
