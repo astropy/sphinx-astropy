@@ -38,7 +38,7 @@ confv2 = [
   "sphinx-copybutton",
 ]
 confv3 = [
-  "sunpy-sphinx-theme@git+https://github.com/Cadair/sunpy-sphinx-theme@toml/fix_search",
+  "sunpy-sphinx-theme@git+https://github.com/sunpy/sunpy-sphinx-theme",
   "sphinx-copybutton",
 ]
 all = ["astropy"]
