@@ -1,6 +1,7 @@
 import pytest
 
 pytest.importorskip("pydata_sphinx_theme")
+pytest.importorskip("sphinx_copybutton")
 
 from sphinx.cmd.build import build_main  # noqa: E402
 
