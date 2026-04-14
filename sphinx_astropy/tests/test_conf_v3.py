@@ -1,12 +1,11 @@
 import pytest
 
-pytest.importorskip("pydata_sphinx_theme")
 pytest.importorskip("sphinx_copybutton")
 
 from sphinx.cmd.build import build_main  # noqa: E402
 
 BASIC_CONF = """
-from sphinx_astropy.conf.v2 import *
+from sphinx_astropy.conf.v3 import *
 suppress_warnings = ['app.add_directive', 'app.add_node', 'app.add_role']
 """
 

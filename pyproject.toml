@@ -18,7 +18,7 @@ classifiers = [
 ]
 description = "Sphinx extensions and configuration specific to the Astropy project"
 readme = {file = "README.rst", content-type = "text/x-rst"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
   "astropy-sphinx-theme",
@@ -36,6 +36,10 @@ dependencies = [
 confv2 = [
   "pydata-sphinx-theme",
   "sphinx-copybutton",
+]
+confv3 = [
+  "sphinx-astropy[confv2]",
+  "astropy-sphinx-theme>=3.0.0",
 ]
 all = ["astropy"]
 tests = ["pytest"]
