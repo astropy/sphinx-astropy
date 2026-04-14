@@ -21,7 +21,7 @@ readme = {file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-  "astropy-sphinx-theme@git+https://github.com/Cadair/astropy-sphinx-theme@sunpy-astropy-theme",
+  "astropy-sphinx-theme",
   "numpydoc",
   "packaging",
   "pillow",
@@ -39,6 +39,7 @@ confv2 = [
 ]
 confv3 = [
   "sphinx-astropy[confv2]",
+  "astropy-sphinx-theme>=3.0.0",
 ]
 all = ["astropy"]
 tests = ["pytest"]
