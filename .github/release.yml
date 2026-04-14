@@ -1,7 +1,20 @@
 changelog:
   exclude:
     authors:
-      - dependabot
-      - dependabot[bot]
       - pre-commit-ci
+      - dependabot
       - pre-commit-ci[bot]
+      - dependabot[bot]
+  categories:
+    - title: Bug Fixes
+      labels:
+        - bug
+    - title: New Features
+      labels:
+        - enhancement
+    - title: Documentation
+      labels:
+        - Documentation
+    - title: Other Changes
+      labels:
+        - "*"
