@@ -68,6 +68,14 @@ jobs:
             python-version: "3.14"
             toxenv: py314-test-v2deps-sphinxdev
 
+          - os: ubuntu-latest
+            python-version: "3.14"
+            toxenv: py314-test-v3deps-sphinx91
+
+          - os: ubuntu-latest
+            python-version: "3.13"
+            toxenv: py313-test-v3deps-sphinx82
+
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
       with:
