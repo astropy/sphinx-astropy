@@ -2,52 +2,39 @@ name: Release
 
 on:
   pull_request:
-    # We also want this workflow triggered if the 'Build all wheels' label is added
-    # or present when PR is updated
-    types:
-      - synchronize
-      - labeled
   push:
+    branches:
+      - main
     tags:
-      - '*'
+      - "v*"
+  workflow_dispatch:
+
+permissions: {}
 
 jobs:
-  build-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to PyPI
+  build:
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@e97344095b099e1d729fe97429078c9975921d8a # v2
+    with:
+      save_artifacts: true
+      upload_to_pypi: false
+      test_extras: tests
+      test_command: pytest --pyargs sphinx_astropy
+
+  upload:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Upload release to PyPI
     runs-on: ubuntu-latest
-    if: ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags')) || contains(github.event.pull_request.labels.*.name, 'Build wheels'))
-
+    needs: [build]
+    environment: pypi
+    permissions:
+      id-token: write
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
-      with:
-        python-version: "3.12"
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          merge-multiple: true
+          pattern: dist-*
+          path: dist
 
-    - name: Install build dependencies
-      run: python -m pip install pip build "twine>=3.3" -U
-
-    - name: Build package
-      run: python -m build --sdist --wheel .
-
-    - name: List result
-      run: ls -l dist
-
-    - name: Check long_description
-      run: python -m twine check --strict dist/*
-
-    - name: Test package
-      run: |
-        cd ..
-        python -m venv testenv
-        testenv/bin/pip install pip -U
-        testenv/bin/pip install pytest sphinx-astropy/dist/*.whl
-        testenv/bin/pytest sphinx-astropy/sphinx_astropy
-
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_password }}
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
