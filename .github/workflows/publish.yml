@@ -13,7 +13,7 @@ permissions: {}
 
 jobs:
   build:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@e97344095b099e1d729fe97429078c9975921d8a # v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@2835f0cacddf3f8de198db9afdb5354a5cebe0ef # v2
     with:
       save_artifacts: true
       upload_to_pypi: false
@@ -37,4 +37,4 @@ jobs:
           path: dist
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
