@@ -49,6 +49,7 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org/stable/',
                    (None, 'http://data.astropy.org/intersphinx/matplotlib.inv')),
     'astropy': ('https://docs.astropy.org/en/stable/', None),
+    'astropy.org': ('https://astropy.org/', None),
     'h5py': ('https://docs.h5py.org/en/stable/', None),
 }
 
