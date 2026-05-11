@@ -37,7 +37,7 @@ Installing **sphinx-astropy** will automatically install (if not already present
 
 * `Sphinx <http://www.sphinx-doc.org>`_
 
-* `astropy-sphinx-theme <https://github.com/astropy/astropy-sphinx-theme>`_ - the default 'bootstrap' theme use by Astropy and a number of affiliated packages. This goes with `sphinx_astropy.conf.v1`.
+* `astropy-sphinx-theme <https://github.com/astropy/astropy-sphinx-theme>`_ - the default 'bootstrap' theme use by Astropy and a number of affiliated packages. This goes with ``sphinx_astropy.conf.v1``.
 
 * `sphinx-automodapi <http://sphinx-automodapi.readthedocs.io>`_ - an extension that makes it easy to automatically generate API documentation.
 
@@ -53,8 +53,8 @@ Installing **sphinx-astropy** will automatically install (if not already present
 pydata-sphinx-theme (confv2)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To use the new `pydata-sphinx-theme` with `sphinx_astropy.conf.v2`, you have to install
-the optional `[confv2]` dependencies::
+To use the new ``pydata-sphinx-theme`` with ``sphinx_astropy.conf.v2``, you have to install
+the optional ``[confv2]`` dependencies::
 
     pip install sphinx-astropy[confv2]
 
@@ -65,3 +65,16 @@ That would pull in the following as well:
 
 * `sphinx-copybutton <https://github.com/executablebooks/sphinx-copybutton>`_ - a small Sphinx
   extension to add a "copy" button to code blocks.
+
+``astropy-unified`` theme (confv3)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use the new ``astropy-unified`` theme, which is a derivative of ``pydata-sphinx-theme`` and ``sunpy-sphinx-theme`` with ``sphinx_astropy.conf.v3``, you have to install
+the optional ``[confv3]`` dependencies::
+
+    pip install sphinx-astropy[confv3]
+
+This would pull in the following as well:
+
+* ``astropy-sphinx-theme >=3.0``
+* All ``confv3`` dependencies.
