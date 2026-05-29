@@ -21,7 +21,7 @@ readme = {file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-  "astropy-sphinx-theme>=1.0", # updateme
+  "astropy-sphinx-theme>=3.0",
   "numpydoc>=1.0.0",
   "packaging>=17.0",
   "pillow>=8.3.2",
