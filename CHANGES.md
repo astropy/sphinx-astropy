@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Python 3.10 or newer is now required [#94]
+- Lower bounds were added to all direct dependencies [#100]
+- `pytest-doctestplus>=1.3.0` is now required [#100]
+
 ## 1.10 (2025-08-06)
 
 - Update minimum required version of Sphinx to 4.0.0
