@@ -21,15 +21,15 @@ readme = {file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-  "astropy-sphinx-theme",
-  "numpydoc",
-  "packaging",
-  "pillow",
-  "pytest-doctestplus>=0.11",
-  "sphinx-automodapi",
-  "sphinx-gallery",
+  "astropy-sphinx-theme>=1.0", # updateme
+  "numpydoc>=1.0.0",
+  "packaging>=17.0",
+  "pillow>=8.3.2",
+  "pytest-doctestplus>=0.11.0",
+  "sphinx-automodapi>=0.3",
+  "sphinx-gallery>=0.11.0",
   "sphinx>=4.0.0",
-  "sphinxcontrib-jquery",
+  "sphinxcontrib-jquery>=1.0.0",
 ]
 
 [project.optional-dependencies]
