@@ -132,7 +132,13 @@ if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
         "time-like": ":term:`astropy:time-like`",
     }
 
-# Aliases to Astropy's physical types. In packages these can be turned on with
+# Aliases to Astropy's physical types. These are NOT included in
+# ``numpydoc_xref_astropy_aliases`` below by default: their keys are quoted
+# strings such as 'power', and numpydoc treats a quoted string inside a
+# ``{...}`` parameter type as a literal option value. Enabling them therefore
+# cross-references any option that merely shares a physical type's name (e.g.
+# the 'power' option of a 'stretch' parameter) to that physical type. Packages
+# that really want physical-type x-refs can still opt in explicitly with
 # ``numpydoc_xref_aliases.update(numpydoc_xref_aliases_astropy_physical_type)``
 # (if astropy is in the intersphinx mapping).
 numpydoc_xref_aliases_astropy_physical_type = {}  # works even if no astropy
@@ -140,7 +146,7 @@ if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
 
     from astropy.units.physical import _name_physical_mapping
     for ptype in _name_physical_mapping.keys():
-        val = f":ref:`:ref: '{ptype}' <astropy:{ptype}>`"   # <= intersphinxed
+        val = f":ref:`'{ptype}' <astropy:{ptype}>`"   # <= intersphinxed
         numpydoc_xref_aliases_astropy_physical_type[f"'{ptype}'"] = val
 
     del ptype, val, _name_physical_mapping  # cleanup namespace
@@ -152,7 +158,6 @@ if ASTROPY_INSTALLED and minversion(astropy, "4.3"):
 # (if astropy is in the intersphinx mapping).
 numpydoc_xref_astropy_aliases = ChainMap(  # important at the top
     numpydoc_xref_aliases_astropy_glossary,
-    numpydoc_xref_aliases_astropy_physical_type
 )
 
 # -- Project information ------------------------------------------------------
