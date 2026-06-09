@@ -6,7 +6,7 @@
   are quoted strings such as `'power'`, which numpydoc treats as literal option
   values inside `{...}` parameter types, so they spuriously linked options that
   share a physical type's name. They remain available as an explicit opt-in via
-  `numpydoc_xref_aliases_astropy_physical_type`. [#NN]
+  `numpydoc_xref_aliases_astropy_physical_type`. [#103]
 
 ## 1.10 (2025-08-06)
 
