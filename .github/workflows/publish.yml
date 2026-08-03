@@ -13,7 +13,7 @@ permissions: {}
 
 jobs:
   build:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@6ae6691dfae7f207db7b694e2bbe1c515cf907ab # v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@e5af21e4ae37af089a73bb032e10b78b0e746174 # v2
     with:
       save_artifacts: true
       upload_to_pypi: false
